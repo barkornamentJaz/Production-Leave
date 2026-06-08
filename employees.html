@@ -802,7 +802,7 @@ async function loadAllData() {
       apiFetch('getHolidays'),
       apiFetch('getSettings')
     ]);
-    STATE.employees    = empRes.data    || [];
+    STATE.employees    = (empRes.data || []).map(e => ({ ...e, joinDate: cleanDate(e.joinDate) }));
     STATE.leaveRecords = leaveRes.data  || [];
     STATE.holidays     = holRes.data    || [];
     if (setRes.data) {
@@ -1152,7 +1152,7 @@ function renderEmployeeTable() {
       <td><span style="font-size:11px;color:var(--gray-400);font-weight:600">${e.id}</span></td>
       <td>
         <div style="font-weight:600;color:var(--navy)">${e.name}</div>
-        ${e.joinDate ? `<div style="font-size:10px;color:var(--gray-400)">Joined ${e.joinDate}</div>` : ''}
+        ${e.joinDate ? `<div style="font-size:10px;color:var(--gray-400)">Joined ${cleanDate(e.joinDate)}</div>` : ''}
       </td>
       <td><span class="badge badge-blue">${e.dept}</span></td>
       <td style="text-align:center">${e.entitlement}</td>
@@ -1175,6 +1175,22 @@ function renderEmployeeTable() {
   }).join('');
 }
 
+// Converts any date string (incl. full Google Sheets dates) to YYYY-MM-DD
+function cleanDate(raw) {
+  if (!raw) return '';
+  // Already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(String(raw).trim())) return String(raw).trim();
+  // Try parsing as Date object
+  const d = new Date(raw);
+  if (!isNaN(d.getTime())) {
+    const yyyy = d.getFullYear();
+    const mm   = String(d.getMonth() + 1).padStart(2, '0');
+    const dd   = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return String(raw).trim();
+}
+
 function openAddEmployee() {
   document.getElementById('empModalTitle').textContent = 'Add Employee';
   document.getElementById('empId').value = '';
@@ -1194,7 +1210,7 @@ function openEditEmployee(id) {
   document.getElementById('empName').value         = e.name;
   document.getElementById('empDept').value         = e.dept;
   document.getElementById('empEntitlement').value  = e.entitlement;
-  document.getElementById('empJoinDate').value     = e.joinDate || '';
+  document.getElementById('empJoinDate').value     = cleanDate(e.joinDate);
   document.getElementById('empStatus').value       = e.status;
   openModal('empModal');
 }
@@ -1208,7 +1224,7 @@ async function saveEmployee() {
   const emp = {
     id: id || genEmpId(), name, dept,
     entitlement: document.getElementById('empEntitlement').value,
-    joinDate:    document.getElementById('empJoinDate').value,
+    joinDate:    cleanDate(document.getElementById('empJoinDate').value),
     status:      document.getElementById('empStatus').value
   };
 
