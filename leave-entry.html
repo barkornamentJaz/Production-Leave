@@ -576,6 +576,24 @@ document.addEventListener('DOMContentLoaded',()=>{
 <script>
 /* ── Page-specific logic ── */
 
+// Convert any date string (ISO, full datetime, YYYY-MM-DD) → "YYYY-MM-DD"
+function toYMD(dateStr){
+  if(!dateStr) return '';
+  // Already YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  const d = new Date(dateStr);
+  if(isNaN(d)) return dateStr;
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+// Format for display: "25 Jun 2026"
+function fmtDate(dateStr){
+  if(!dateStr) return '—';
+  const d = new Date(toYMD(dateStr));
+  if(isNaN(d)) return dateStr;
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
 function pageInit(){
   populateEmpSelect('leaveEmpSelect');
   renderLeaveTable();
@@ -629,7 +647,7 @@ function renderLeaveTable(){
       <td><span style="font-size:10px;color:var(--gray-400)">${r.id}</span></td>
       <td style="font-weight:600;color:var(--navy)">${r.empName}${warningBadge}</td>
       <td><span class="badge ${leaveBadgeClass(r.type)}">${leaveCode(r.type)}</span></td>
-      <td>${r.start}</td><td>${r.end}</td>
+      <td>${fmtDate(r.start)}</td><td>${fmtDate(r.end)}</td>
       <td style="text-align:center">${daysCell}</td>
       <td style="color:var(--gray-500)">${r.reason||'—'}</td>
       <td><span class="badge ${r.status==='Approved'?'badge-green':'badge-red'}">${r.status}</span></td>
@@ -680,8 +698,8 @@ function openEditLeave(id){
   document.getElementById('leaveEditId').value=id;
   document.getElementById('leaveEmpSelect').value=r.empId;
   document.getElementById('leaveType').value=r.type;
-  document.getElementById('leaveStartDate').value=r.start;
-  document.getElementById('leaveEndDate').value=r.end;
+  document.getElementById('leaveStartDate').value=toYMD(r.start);
+  document.getElementById('leaveEndDate').value=toYMD(r.end);
   document.getElementById('leaveReason').value=r.reason||'';
   document.getElementById('leaveStatus').value=r.status;
   refreshBalancePanel(r.empId, r.type);
@@ -829,8 +847,8 @@ async function saveLeave(){
   const editId=document.getElementById('leaveEditId').value;
   const empId =document.getElementById('leaveEmpSelect').value;
   const type  =document.getElementById('leaveType').value;
-  const start =document.getElementById('leaveStartDate').value;
-  const end   =document.getElementById('leaveEndDate').value;
+  const start =toYMD(document.getElementById('leaveStartDate').value);
+  const end   =toYMD(document.getElementById('leaveEndDate').value);
   if(!empId)      {toast('Select an employee','warning');return;}
   if(!type)       {toast('Select leave type','warning'); return;}
   if(!start)      {toast('Enter start date','warning');  return;}
@@ -838,12 +856,14 @@ async function saveLeave(){
   if(end<start)   {toast('End date must be after start date','warning');return;}
 
   const emp =getEmployee(empId);
-  const days=calcLeaveDays(start,end,type);
+  const cleanStart=toYMD(start);
+  const cleanEnd  =toYMD(end);
+  const days=calcLeaveDays(cleanStart,cleanEnd,type);
 
   const rec={
     id:      editId||genLeaveId(),
     empId, empName:emp?emp.name:empId,
-    type, start, end, days,
+    type, start:cleanStart, end:cleanEnd, days,
     reason:  document.getElementById('leaveReason').value.trim(),
     status:  document.getElementById('leaveStatus').value
   };
