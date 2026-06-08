@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Settings — Bark Ornament LMS</title>
+  <title>Settings — Bark Ornament Private Limited LMS</title>
   <style>
 /* ============================================================
    BARK ORNAMENT — LEAVE MANAGEMENT SYSTEM
@@ -540,12 +540,9 @@ input, select, textarea { font-family: inherit; }
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">
-          <div class="logo-icon">🌿</div>
-          <div class="logo-text">
-            <h2>BARK ORNAMENT</h2>
-            <p>Leave Management</p>
-          </div>
+          <img src="https://barkornamentjaz.github.io/Production-Leave/images.jpg" alt="Bark Ornament" style="width:100%;max-width:180px;height:60px;object-fit:contain;border-radius:4px;">
         </div>
+        <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;text-align:center;line-height:1.4;">Bark Ornament Private Limited<br>Leave Management</div>
       </div>
 
       <nav class="sidebar-nav">
@@ -630,27 +627,6 @@ input, select, textarea { font-family: inherit; }
     </div>
   </div>
 
-  <div class="settings-section">
-    <div class="settings-section-header">🔗 Google Sheets API Configuration</div>
-    <div class="settings-section-body">
-      <div class="alert alert-info" style="margin-bottom:16px">
-        ℹ️ <strong>How to connect:</strong>
-        <ol style="margin:8px 0 0 18px;font-size:13px;line-height:1.8">
-          <li>Open <strong>Code.gs</strong> and deploy it as a Google Apps Script Web App</li>
-          <li>Copy the deployment URL (ends with <code>/exec</code>)</li>
-          <li>Open <strong>js/core.js</strong> and paste the URL into <code>const API_URL = '…'</code></li>
-          <li>Click <em>Initialize Google Sheets Structure</em> below on first run</li>
-        </ol>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Google Apps Script Web App URL</label>
-        <input type="text" id="set-api-url" class="form-control"
-               placeholder="https://script.google.com/macros/s/…/exec" readonly>
-        <div class="form-hint">Configure this in js/core.js — const API_URL = '…'</div>
-      </div>
-      <button class="btn btn-outline" onclick="setupSheets()">🗂️ Initialize Google Sheets Structure</button>
-    </div>
-  </div>
 
   <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
     <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
@@ -676,7 +652,7 @@ const STATE = {
   leaveRecords: [],
   holidays: [],
   settings: {
-    company: 'Bark Ornament (Pvt) Ltd',
+    company: 'Bark Ornament Private Limited',
     shlLimit: 1,
     satRule: 0.5
   },
@@ -1054,7 +1030,7 @@ function pageInit() {
   document.getElementById('set-company').value  = s.company  || '';
   document.getElementById('set-shl-limit').value = s.shlLimit || 1;
   document.getElementById('set-sat-rule').value  = s.satRule  || 0.5;
-  document.getElementById('set-api-url').value   = API_URL || '(not configured — edit js/core.js)';
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
