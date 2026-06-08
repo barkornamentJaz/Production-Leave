@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employees — Bark Ornament LMS</title>
+  <title>Employees — Bark Ornament Private Limited LMS</title>
   <style>
 /* ============================================================
    BARK ORNAMENT — LEAVE MANAGEMENT SYSTEM
@@ -540,12 +540,9 @@ input, select, textarea { font-family: inherit; }
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">
-          <div class="logo-icon">🌿</div>
-          <div class="logo-text">
-            <h2>BARK ORNAMENT</h2>
-            <p>Leave Management</p>
-          </div>
+          <img src="https://barkornamentjaz.github.io/Production-Leave/images.jpg" alt="Bark Ornament" style="width:100%;max-width:180px;height:60px;object-fit:contain;border-radius:4px;">
         </div>
+        <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;text-align:center;line-height:1.4;">Bark Ornament Private Limited<br>Leave Management</div>
       </div>
 
       <nav class="sidebar-nav">
@@ -645,12 +642,9 @@ input, select, textarea { font-family: inherit; }
         </div>
         <div class="form-group">
           <label class="form-label">Department <span>*</span></label>
-          <input type="text" id="empDept" class="form-control" placeholder="Production" list="deptList">
-          <datalist id="deptList">
-            <option value="Production"><option value="Finishing">
-            <option value="Printing"><option value="Packaging">
-            <option value="Administration">
-          </datalist>
+          <select id="empDept" class="form-control">
+            <option value="">Select Department…</option>
+          </select>
         </div>
       </div>
       <div class="form-row">
@@ -725,9 +719,10 @@ const STATE = {
   leaveRecords: [],
   holidays: [],
   settings: {
-    company: 'Bark Ornament (Pvt) Ltd',
+    company: 'Bark Ornament Private Limited',
     shlLimit: 1,
-    satRule: 0.5
+    satRule: 0.5,
+    departments: ['Production']
   },
   loaded: false
 };
@@ -1099,12 +1094,32 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script>
 function pageInit() {
-  // Populate dept filter
-  const depts = [...new Set(STATE.employees.map(e => e.dept).filter(Boolean))].sort();
+  populateDeptDropdowns();
+  renderEmployeeTable();
+}
+
+function getDepartments() {
+  const settingDepts = STATE.settings.departments;
+  // Support both array and comma-string (from Google Sheets)
+  if (Array.isArray(settingDepts) && settingDepts.length) return settingDepts;
+  if (typeof settingDepts === 'string' && settingDepts.trim()) {
+    return settingDepts.split(',').map(d => d.trim()).filter(Boolean);
+  }
+  return ['Production'];
+}
+
+function populateDeptDropdowns() {
+  const depts = getDepartments();
+
+  // Filter dropdown (toolbar)
   const df = document.getElementById('emp-dept-filter');
   if (df) df.innerHTML = '<option value="">All Departments</option>' +
     depts.map(d => `<option value="${d}">${d}</option>`).join('');
-  renderEmployeeTable();
+
+  // Modal dropdown
+  const empDeptSel = document.getElementById('empDept');
+  if (empDeptSel) empDeptSel.innerHTML = '<option value="">Select Department…</option>' +
+    depts.map(d => `<option value="${d}">${d}</option>`).join('');
 }
 
 function renderEmployeeTable() {
@@ -1162,7 +1177,10 @@ function renderEmployeeTable() {
 
 function openAddEmployee() {
   document.getElementById('empModalTitle').textContent = 'Add Employee';
-  ['empId','empName','empDept','empJoinDate'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('empId').value = '';
+  document.getElementById('empName').value = '';
+  document.getElementById('empDept').value = '';
+  document.getElementById('empJoinDate').value = '';
   document.getElementById('empEntitlement').value = '21';
   document.getElementById('empStatus').value = 'Active';
   openModal('empModal');
