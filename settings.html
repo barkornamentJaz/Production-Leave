@@ -627,6 +627,18 @@ input, select, textarea { font-family: inherit; }
     </div>
   </div>
 
+  <div class="settings-section">
+    <div class="settings-section-header">🏢 Departments</div>
+    <div class="settings-section-body">
+      <div class="form-hint" style="margin-bottom:10px">Add or remove departments used in the Employee form dropdown.</div>
+      <div id="dept-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px"></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="new-dept-input" class="form-control" placeholder="e.g. Finishing" style="max-width:220px"
+               onkeydown="if(event.key==='Enter') addDepartment()">
+        <button class="btn btn-outline btn-sm" onclick="addDepartment()">+ Add</button>
+      </div>
+    </div>
+  </div>
 
   <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
     <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
@@ -654,7 +666,8 @@ const STATE = {
   settings: {
     company: 'Bark Ornament Private Limited',
     shlLimit: 1,
-    satRule: 0.5
+    satRule: 0.5,
+    departments: ['Production']
   },
   loaded: false
 };
@@ -954,18 +967,6 @@ function leaveBadgeClass(type) {
 
 /* ── 13. SETTINGS SAVE ────────────────────────────────────── */
 
-async function saveSettings() {
-  STATE.settings.company  = document.getElementById('set-company').value.trim();
-  STATE.settings.shlLimit = parseInt(document.getElementById('set-shl-limit').value);
-  STATE.settings.satRule  = parseFloat(document.getElementById('set-sat-rule').value);
-  try {
-    await apiFetch('saveSettings', STATE.settings);
-    toast('Settings saved!', 'success');
-  } catch(e) {
-    toast('Saved locally (API not connected)', 'info');
-  }
-}
-
 async function setupSheets() {
   if (!API_URL) { toast('Configure API_URL in js/core.js first', 'warning'); return; }
   showLoading(true);
@@ -1027,10 +1028,74 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 function pageInit() {
   const s = STATE.settings;
-  document.getElementById('set-company').value  = s.company  || '';
+  document.getElementById('set-company').value   = s.company  || '';
   document.getElementById('set-shl-limit').value = s.shlLimit || 1;
   document.getElementById('set-sat-rule').value  = s.satRule  || 0.5;
+  renderDeptList();
+}
 
+function getDepartments() {
+  const d = STATE.settings.departments;
+  if (Array.isArray(d) && d.length) return [...d];
+  if (typeof d === 'string' && d.trim()) return d.split(',').map(x => x.trim()).filter(Boolean);
+  return ['Production'];
+}
+
+function renderDeptList() {
+  const depts = getDepartments();
+  const container = document.getElementById('dept-list');
+  if (!container) return;
+  container.innerHTML = depts.map((d, i) => `
+    <div style="display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);
+                border:1px solid #bfdbfe;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;color:#1d4ed8">
+      ${d}
+      <button onclick="removeDepartment(${i})" style="background:none;border:none;cursor:pointer;
+              color:#93c5fd;font-size:14px;line-height:1;padding:0 0 0 4px;" title="Remove">×</button>
+    </div>`).join('');
+}
+
+function addDepartment() {
+  const input = document.getElementById('new-dept-input');
+  const name  = input.value.trim();
+  if (!name) { toast('Enter a department name', 'warning'); return; }
+  const depts = getDepartments();
+  if (depts.some(d => d.toLowerCase() === name.toLowerCase())) {
+    toast('Department already exists', 'warning'); return;
+  }
+  depts.push(name);
+  STATE.settings.departments = depts;
+  input.value = '';
+  renderDeptList();
+  toast(`"${name}" added`, 'success');
+}
+
+function removeDepartment(index) {
+  const depts = getDepartments();
+  const name  = depts[index];
+  if (depts.length === 1) { toast('At least one department is required', 'warning'); return; }
+  depts.splice(index, 1);
+  STATE.settings.departments = depts;
+  renderDeptList();
+  toast(`"${name}" removed`, 'info');
+}
+
+async function saveSettings() {
+  STATE.settings.company      = document.getElementById('set-company').value.trim();
+  STATE.settings.shlLimit     = parseInt(document.getElementById('set-shl-limit').value);
+  STATE.settings.satRule      = parseFloat(document.getElementById('set-sat-rule').value);
+  // departments already updated live via addDepartment/removeDepartment
+  const payload = {
+    company:     STATE.settings.company,
+    shlLimit:    STATE.settings.shlLimit,
+    satRule:     STATE.settings.satRule,
+    departments: getDepartments().join(',')
+  };
+  try {
+    await apiFetch('saveSettings', payload);
+    toast('Settings saved!', 'success');
+  } catch(e) {
+    toast('Saved locally (API not connected)', 'info');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
