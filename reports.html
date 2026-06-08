@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reports — Bark Ornament LMS</title>
+  <title>Reports — Bark Ornament Private Limited LMS</title>
   <style>
 /* ============================================================
    BARK ORNAMENT — LEAVE MANAGEMENT SYSTEM
@@ -489,11 +489,17 @@ input, select, textarea { font-family: inherit; }
 /* ── Print styles ── */
 @media print {
   .sidebar, .top-header, .toolbar, .report-tabs,
-  .btn, .modal-overlay { display: none !important; }
+  .btn, .modal-overlay, .no-print { display: none !important; }
   .main-content { margin-left: 0 !important; }
   .page-content { padding: 0 !important; }
-  .card { box-shadow: none !important; }
-  .data-table th { background: #eee !important; color: #000 !important; }
+  .card { box-shadow: none !important; border: 1px solid #ccc !important; }
+  .data-table th { background: #1f2937 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .report-section { display: none !important; }
+  .report-section.active { display: block !important; }
+  .print-header { display: block !important; }
+  .print-footer { display: block !important; }
+  body { font-size: 12px; }
+  .badge { border: 1px solid #999 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 /* ── Responsive ── */
@@ -511,6 +517,42 @@ input, select, textarea { font-family: inherit; }
 @media (max-width: 520px) {
   .stat-grid { grid-template-columns: 1fr; }
   .toolbar { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── Print Header / Footer (hidden on screen) ── */
+.print-header { display: none; }
+.print-footer  { display: none; }
+.print-header {
+  text-align: center; padding-bottom: 14px;
+  border-bottom: 2px solid #0f2744; margin-bottom: 16px;
+}
+.print-header .ph-logo {
+  max-height: 56px; object-fit: contain; margin-bottom: 6px;
+}
+.print-header .ph-company {
+  font-size: 15px; font-weight: 800; color: #0f2744; letter-spacing:.04em;
+}
+.print-header .ph-title {
+  font-size: 12px; color: #6b7280; margin-top: 2px;
+}
+.print-header .ph-meta {
+  font-size: 10px; color: #9ca3af; margin-top: 4px;
+}
+.print-footer {
+  margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 20px;
+}
+.print-footer .sig-row {
+  display: flex; justify-content: space-between; gap: 20px;
+}
+.print-footer .sig-box {
+  flex: 1; text-align: center;
+}
+.print-footer .sig-line {
+  border-top: 1px solid #374151; margin-bottom: 6px; padding-top: 4px;
+  font-size: 11px; font-weight: 700; color: #374151;
+}
+.print-footer .sig-label {
+  font-size: 10px; color: #6b7280;
 }
 
   </style>
@@ -540,12 +582,9 @@ input, select, textarea { font-family: inherit; }
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-logo">
         <div class="logo-mark">
-          <div class="logo-icon">🌿</div>
-          <div class="logo-text">
-            <h2>BARK ORNAMENT</h2>
-            <p>Leave Management</p>
-          </div>
+          <img src="https://barkornamentjaz.github.io/Production-Leave/images.jpg" alt="Bark Ornament" style="width:100%;max-width:180px;height:60px;object-fit:contain;border-radius:4px;">
         </div>
+        <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;text-align:center;line-height:1.4;">Bark Ornament Private Limited<br>Leave Management</div>
       </div>
 
       <nav class="sidebar-nav">
@@ -596,11 +635,21 @@ input, select, textarea { font-family: inherit; }
 
 <!-- PAGE BODY -->
 <div id="reportsPage">
+
+  <!-- PRINT HEADER (hidden on screen, shown on print) -->
+  <div class="print-header" id="printHeader">
+    <img class="ph-logo" src="https://barkornamentjaz.github.io/Production-Leave/images.jpg" alt="Logo">
+    <div class="ph-company" id="ph-company-name">Bark Ornament Private Limited</div>
+    <div class="ph-title"  id="ph-report-title">Leave Report</div>
+    <div class="ph-meta"   id="ph-report-meta"></div>
+  </div>
+
   <div class="report-tabs">
     <div class="report-tab active" data-tab="balance"  onclick="showReportTab('balance')">📊 Leave Balance</div>
     <div class="report-tab"        data-tab="excess"   onclick="showReportTab('excess')">⚠️ Excess Short Leave</div>
     <div class="report-tab"        data-tab="monthly"  onclick="showReportTab('monthly')">📅 Monthly Leave</div>
     <div class="report-tab"        data-tab="dept"     onclick="showReportTab('dept')">🏢 By Department</div>
+    <div class="report-tab"        data-tab="employee" onclick="showReportTab('employee')">👤 Employee Report</div>
   </div>
 
   <!-- Balance Report -->
@@ -718,8 +767,8 @@ input, select, textarea { font-family: inherit; }
       <div class="table-wrap">
         <table class="data-table">
           <thead><tr>
-            <th>Department</th>
-            <th style="text-align:center">Employees</th>
+            <th>Department / Employee</th>
+            <th style="text-align:center">Entitlement</th>
             <th style="text-align:center">Total Leave Days</th>
             <th>Leave Breakdown</th>
           </tr></thead>
@@ -728,6 +777,101 @@ input, select, textarea { font-family: inherit; }
       </div>
     </div>
   </div>
+
+  <!-- Employee Report -->
+  <div id="report-employee" class="report-section">
+    <div class="toolbar" style="margin-bottom:12px">
+      <div class="toolbar-left">
+        <h3 style="font-size:14px;font-weight:700;color:var(--navy)">Employee Leave Report</h3>
+        <select class="filter-select" id="emp-report-select" onchange="buildEmployeeReport()" style="min-width:200px">
+          <option value="">— Select Employee —</option>
+        </select>
+        <select class="filter-select" id="emp-report-year" onchange="buildEmployeeReport()">
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+        </select>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-outline btn-sm no-print" onclick="printReport()">🖨️ Print</button>
+      </div>
+    </div>
+
+    <!-- Empty state before selection -->
+    <div id="emp-report-empty" class="card">
+      <div class="empty-state">
+        <div class="empty-icon">👤</div>
+        Select an employee above to view their full leave report
+      </div>
+    </div>
+
+    <!-- Employee report content -->
+    <div id="emp-report-content" style="display:none">
+
+      <!-- Summary cards -->
+      <div class="stat-grid" id="emp-report-stats" style="margin-bottom:16px"></div>
+
+      <!-- Monthly breakdown -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <span>📅</span>
+          <h3>Month-by-Month Breakdown</h3>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table class="data-table">
+            <thead><tr>
+              <th>Month</th>
+              <th style="text-align:center">Annual</th>
+              <th style="text-align:center">Casual</th>
+              <th style="text-align:center">Sick</th>
+              <th style="text-align:center">Half Day</th>
+              <th style="text-align:center">Short Leave</th>
+              <th style="text-align:center">Total Days</th>
+            </tr></thead>
+            <tbody id="emp-report-monthly-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Full leave records -->
+      <div class="card">
+        <div class="card-header">
+          <span>📋</span>
+          <h3>All Leave Records</h3>
+          <span id="emp-report-count" style="font-size:11px;color:var(--gray-400)"></span>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table class="data-table">
+            <thead><tr>
+              <th>Start Date</th><th>End Date</th><th>Leave Type</th>
+              <th style="text-align:center">Days</th><th>Reason</th><th>Status</th>
+            </tr></thead>
+            <tbody id="emp-report-records-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PRINT FOOTER (hidden on screen, shown on print) -->
+  <div class="print-footer" id="printFooter">
+    <div class="sig-row">
+      <div class="sig-box">
+        <div class="sig-line">Prepared By</div>
+        <div class="sig-label">Name &amp; Signature</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-line">Checked By</div>
+        <div class="sig-label">Name &amp; Signature</div>
+      </div>
+      <div class="sig-box">
+        <div class="sig-line">Authorized By</div>
+        <div class="sig-label">Name &amp; Signature</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -749,7 +893,7 @@ const STATE = {
   leaveRecords: [],
   holidays: [],
   settings: {
-    company: 'Bark Ornament (Pvt) Ltd',
+    company: 'Bark Ornament Private Limited',
     shlLimit: 1,
     satRule: 0.5
   },
@@ -1074,7 +1218,48 @@ async function setupSheets() {
   } finally { showLoading(false); }
 }
 
-function printReport() { window.print(); }
+function printReport() {
+  // Find active tab
+  const activeTab = document.querySelector('.report-tab.active');
+  const tab = activeTab ? activeTab.dataset.tab : 'balance';
+
+  const titles = {
+    balance:  'Leave Balance Report',
+    excess:   'Excess Short Leave Report',
+    monthly:  'Monthly Leave Report',
+    dept:     'Department Leave Report',
+    employee: 'Employee Leave Report'
+  };
+
+  // Set print header details
+  document.getElementById('ph-company-name').textContent =
+    STATE.settings.company || 'Bark Ornament Private Limited';
+  document.getElementById('ph-report-title').textContent = titles[tab] || 'Leave Report';
+
+  // Set meta line (date range / year)
+  let meta = 'Generated: ' + new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+  if (tab === 'excess') {
+    const m = document.getElementById('excess-month').value;
+    const y = document.getElementById('excess-year').value;
+    const mn = new Date(y, parseInt(m)-1, 1).toLocaleString('en-GB',{month:'long'});
+    meta += '  |  Period: ' + mn + ' ' + y;
+  } else if (tab === 'monthly') {
+    const m = document.getElementById('monthly-month').value;
+    const y = document.getElementById('monthly-year').value;
+    const mn = new Date(y, parseInt(m)-1, 1).toLocaleString('en-GB',{month:'long'});
+    meta += '  |  Period: ' + mn + ' ' + y;
+  } else if (tab === 'employee') {
+    const sel = document.getElementById('emp-report-select');
+    const yr  = document.getElementById('emp-report-year').value;
+    const empName = sel.options[sel.selectedIndex]?.text || '';
+    meta += '  |  Employee: ' + empName + '  |  Year: ' + yr;
+  } else {
+    meta += '  |  Year: ' + currentYear();
+  }
+  document.getElementById('ph-report-meta').textContent = meta;
+
+  window.print();
+}
 
 /* ── 14. INIT ─────────────────────────────────────────────── */
 
@@ -1124,10 +1309,26 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 function pageInit() {
   const now = new Date();
+  const curYear = String(now.getFullYear());
+
   ['excess-month','monthly-month'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = String(now.getMonth()+1).padStart(2,'0');
   });
+  ['excess-year','monthly-year','emp-report-year'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = curYear;
+  });
+
+  // Populate employee selector
+  const sel = document.getElementById('emp-report-select');
+  if (sel) {
+    sel.innerHTML = '<option value="">— Select Employee —</option>' +
+      STATE.employees.map(e =>
+        `<option value="${e.id}">${e.name} (${e.id}) — ${e.dept}</option>`
+      ).join('');
+  }
+
   buildAllReports();
 }
 
@@ -1141,6 +1342,134 @@ function buildAllReports() {
   buildExcessReport();
   buildMonthlyReport();
   buildDeptReport();
+}
+
+function buildEmployeeReport() {
+  const empId = document.getElementById('emp-report-select').value;
+  const yr    = parseInt(document.getElementById('emp-report-year').value);
+
+  const emptyEl   = document.getElementById('emp-report-empty');
+  const contentEl = document.getElementById('emp-report-content');
+
+  if (!empId) {
+    emptyEl.style.display = '';
+    contentEl.style.display = 'none';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  contentEl.style.display = '';
+
+  const emp   = getEmployee(empId);
+  const recs  = STATE.leaveRecords.filter(r =>
+    r.empId === empId && new Date(r.start).getFullYear() === yr
+  ).sort((a,b) => a.start.localeCompare(b.start));
+
+  const approved = recs.filter(r => r.status === 'Approved');
+  let al=0, cl=0, sl=0, hd=0, shl=0;
+  approved.forEach(r => {
+    switch(r.type) {
+      case 'Annual Leave':   al  += parseFloat(r.days||0); break;
+      case 'Casual Leave':   cl  += parseFloat(r.days||0); break;
+      case 'Sick Leave':     sl  += parseFloat(r.days||0); break;
+      case 'Half Day Leave': hd  += 0.5; break;
+      case 'Short Leave':    shl += 1;   break;
+    }
+  });
+  const entitlement = emp ? parseInt(emp.entitlement) : 0;
+  const balance     = Math.max(0, entitlement - al);
+
+  // Stat cards
+  document.getElementById('emp-report-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon navy">📋</div>
+      <div class="stat-content">
+        <div class="stat-value">${entitlement}</div>
+        <div class="stat-label">AL Entitlement</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon teal">🏖️</div>
+      <div class="stat-content">
+        <div class="stat-value">${al}</div>
+        <div class="stat-label">Annual Leave Taken</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon ${balance <= 3 ? 'red' : 'teal'}">💼</div>
+      <div class="stat-content">
+        <div class="stat-value" style="color:${balance<=3?'var(--red)':'var(--green)'}">${balance}</div>
+        <div class="stat-label">AL Balance</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon gold">📊</div>
+      <div class="stat-content">
+        <div class="stat-value">${cl}</div>
+        <div class="stat-label">Casual Leave</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon gold">🤒</div>
+      <div class="stat-content">
+        <div class="stat-value">${sl}</div>
+        <div class="stat-label">Sick Leave</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon ${shl > (STATE.settings.shlLimit||1) ? 'red' : 'navy'}">⏱️</div>
+      <div class="stat-content">
+        <div class="stat-value">${shl}</div>
+        <div class="stat-label">Short Leaves (Year)</div>
+      </div>
+    </div>`;
+
+  // Month-by-month breakdown
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let monthlyHTML = '';
+  let hasAnyLeave = false;
+  months.forEach((mn, mi) => {
+    const ym = `${yr}-${String(mi+1).padStart(2,'0')}`;
+    const mRecs = approved.filter(r => r.start.startsWith(ym) || r.end.startsWith(ym));
+    if (!mRecs.length) return;
+    hasAnyLeave = true;
+    let mAL=0, mCL=0, mSL=0, mHD=0, mSHL=0;
+    mRecs.forEach(r => {
+      switch(r.type) {
+        case 'Annual Leave':   mAL  += parseFloat(r.days||0); break;
+        case 'Casual Leave':   mCL  += parseFloat(r.days||0); break;
+        case 'Sick Leave':     mSL  += parseFloat(r.days||0); break;
+        case 'Half Day Leave': mHD  += 0.5; break;
+        case 'Short Leave':    mSHL += 1;   break;
+      }
+    });
+    const mTotal = mAL + mCL + mSL + mHD;
+    monthlyHTML += `<tr>
+      <td style="font-weight:600">${mn} ${yr}</td>
+      <td style="text-align:center">${mAL || '—'}</td>
+      <td style="text-align:center">${mCL || '—'}</td>
+      <td style="text-align:center">${mSL || '—'}</td>
+      <td style="text-align:center">${mHD || '—'}</td>
+      <td style="text-align:center">${mSHL || '—'}</td>
+      <td style="text-align:center;font-weight:700;color:var(--navy)">${mTotal || '—'}</td>
+    </tr>`;
+  });
+  document.getElementById('emp-report-monthly-body').innerHTML = hasAnyLeave
+    ? monthlyHTML
+    : `<tr><td colspan="7"><div class="empty-state" style="padding:16px">No approved leaves recorded for ${yr}</div></td></tr>`;
+
+  // All records table
+  document.getElementById('emp-report-count').textContent = `${recs.length} record${recs.length!==1?'s':''}`;
+  document.getElementById('emp-report-records-body').innerHTML = recs.length === 0
+    ? `<tr><td colspan="6"><div class="empty-state" style="padding:16px">No leave records found for ${yr}</div></td></tr>`
+    : recs.map(r => `<tr>
+        <td>${r.start}</td>
+        <td>${r.end}</td>
+        <td><span class="badge ${leaveBadgeClass(r.type)}">${leaveCode(r.type)}</span> ${r.type}</td>
+        <td style="text-align:center">${r.type==='Short Leave'?'—':r.days}</td>
+        <td>${r.reason||'—'}</td>
+        <td><span class="badge ${r.status==='Approved'?'badge-green':'badge-red'}">${r.status}</span></td>
+      </tr>`).join('');
 }
 
 function buildBalanceReport() {
@@ -1234,12 +1563,31 @@ function buildDeptReport() {
       const cnt = recs.filter(r => r.type === t).length;
       return cnt ? `<span class="badge ${leaveBadgeClass(t)}">${leaveCode(t)}: ${cnt}</span>` : '';
     }).filter(Boolean).join(' ');
-    return `<tr>
-      <td style="font-weight:600;color:var(--navy)">${dept}</td>
-      <td style="text-align:center">${deptEmps.length}</td>
+
+    // Per-employee rows
+    const empRows = deptEmps.map(e => {
+      const s = getLeaveStats(e.id);
+      return `<tr style="background:#f9fafb">
+        <td style="padding-left:28px;font-size:11px;color:var(--gray-600)">↳ ${e.name} <span style="color:var(--gray-400)">(${e.id})</span></td>
+        <td style="text-align:center;font-size:11px">${s.entitlement}</td>
+        <td style="text-align:center;font-size:11px">${s.al + s.cl + s.sl + s.hd}</td>
+        <td style="font-size:11px">
+          ${s.al ? `<span class="badge badge-blue">AL:${s.al}</span> ` : ''}
+          ${s.cl ? `<span class="badge badge-teal">CL:${s.cl}</span> ` : ''}
+          ${s.sl ? `<span class="badge badge-gold">SL:${s.sl}</span> ` : ''}
+          ${s.hd ? `<span class="badge badge-gray">HD:${s.hd}</span> ` : ''}
+          ${s.shl ? `<span class="badge badge-red">SHL:${s.shl}</span>` : ''}
+          ${(!s.al && !s.cl && !s.sl && !s.hd && !s.shl) ? '<span style="color:var(--gray-400);font-size:10px">No leaves</span>' : ''}
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `<tr style="background:#e8edf5">
+      <td style="font-weight:700;color:var(--navy);font-size:13px">🏢 ${dept}</td>
+      <td style="text-align:center;font-weight:700">${deptEmps.length}</td>
       <td style="text-align:center;font-weight:700">${total}</td>
       <td><div class="dept-bar">${breakdown || '<span style="color:var(--gray-400);font-size:11px">No leaves</span>'}</div></td>
-    </tr>`;
+    </tr>${empRows}`;
   }).join('');
 }
 
