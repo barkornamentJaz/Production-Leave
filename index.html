@@ -7,7 +7,7 @@
   <style>
 /* ============================================================
    BARK ORNAMENT — LEAVE MANAGEMENT SYSTEM
-   style.css  |  v1.0  |  2025
+   style.css  |  v1.1  |  2025
    ============================================================ */
 
 /* ── CSS Variables ── */
@@ -107,12 +107,44 @@ input, select, textarea { font-family: inherit; }
   overflow-y: auto;
   transition: transform var(--transition);
 }
+
+/* FIX: Sidebar logo — proper flex structure so image + text sit side-by-side */
 .sidebar-logo {
-  padding: 18px 16px 14px;
+  padding: 14px 14px 12px;
   border-bottom: 1px solid rgba(255,255,255,.08);
 }
-.logo-mark { display: flex; align-items: center; gap: 10px; }
-.logo-icon { font-size: 22px; }
+.logo-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.logo-img-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.06);
+  border-radius: 6px;
+  padding: 6px 8px;
+  min-height: 52px;
+}
+/* FIX: Logo image with proper fallback handling */
+.logo-img-wrap img {
+  max-width: 160px;
+  width: 100%;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 3px;
+  display: block;
+}
+.logo-img-fallback {
+  display: none;
+  font-size: 22px;
+}
+.logo-text {
+  text-align: center;
+}
 .logo-text h2 {
   font-size: 11px; font-weight: 800; letter-spacing: .08em;
   color: #fff; text-transform: uppercase;
@@ -243,15 +275,33 @@ input, select, textarea { font-family: inherit; }
   border-radius: 4px; background: var(--teal); color: #fff;
 }
 
-/* ── Balance Bar ── */
+/* FIX: Balance Bar — widen name column, show full name properly */
 .balance-bar-wrap { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-.balance-bar-row { display: grid; grid-template-columns: 130px 1fr 60px; align-items: center; gap: 10px; }
-.balance-bar-name { font-size: 12px; font-weight: 600; color: var(--gray-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.balance-bar-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 64px;
+  align-items: center;
+  gap: 10px;
+}
+.balance-bar-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-700);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .balance-bar-track { height: 8px; background: var(--gray-100); border-radius: 4px; overflow: hidden; }
 .balance-bar-fill  { height: 100%; border-radius: 4px; background: var(--teal); transition: width .4s; }
 .balance-bar-fill.warn { background: var(--gold); }
 .balance-bar-fill.over { background: var(--red); }
-.balance-bar-label { font-size: 11px; color: var(--gray-500); text-align: right; }
+.balance-bar-label {
+  font-size: 11px;
+  color: var(--gray-600);
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
 
 /* ── Monthly Summary Table ── */
 .month-summary-table { width: 100%; border-collapse: collapse; }
@@ -486,6 +536,15 @@ input, select, textarea { font-family: inherit; }
   margin-right: 5px;
 }
 
+/* ── Balance legend ── */
+.balance-legend {
+  display: flex; gap: 14px; padding: 6px 16px 10px;
+  font-size: 11px; color: var(--gray-500); flex-wrap: wrap;
+}
+.balance-legend-dot {
+  width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 4px;
+}
+
 /* ── Print styles ── */
 @media print {
   .sidebar, .top-header, .toolbar, .report-tabs,
@@ -507,12 +566,14 @@ input, select, textarea { font-family: inherit; }
   .span-2, .span-3 { grid-column: 1; }
   .form-row { grid-template-columns: 1fr; }
   .stat-grid { grid-template-columns: 1fr 1fr; }
+  /* FIX: Show mobile menu toggle on small screens */
+  #menuToggle { display: flex !important; }
 }
 @media (max-width: 520px) {
   .stat-grid { grid-template-columns: 1fr; }
   .toolbar { flex-direction: column; align-items: flex-start; }
+  .balance-bar-row { grid-template-columns: 120px 1fr 56px; }
 }
-
   </style>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f2744'/><text y='22' x='5' font-size='18'>🌿</text></svg>">
 </head>
@@ -520,13 +581,12 @@ input, select, textarea { font-family: inherit; }
 
 <script>
 /* ============================================================
-   js/layout.js — Injects shared sidebar + chrome into each page
+   layout.js — Injects shared sidebar + chrome into each page
    ============================================================ */
-
 (function () {
   const SIDEBAR_HTML = `
   <div id="demoBanner" style="display:none;background:linear-gradient(90deg,#d97706,#f59e0b);color:white;padding:10px 24px;font-size:12px;font-weight:600;align-items:center;gap:10px;position:fixed;top:0;left:0;right:0;z-index:9999">
-    <span>⚠️ DEMO MODE — Set your Apps Script URL in js/core.js → const API_URL = '...'</span>
+    <span>⚠️ DEMO MODE — Set your Apps Script URL in core.js → const API_URL = '...'</span>
   </div>
 
   <div id="loadingOverlay" class="loading-overlay">
@@ -538,10 +598,19 @@ input, select, textarea { font-family: inherit; }
 
   <div class="app-wrapper" id="appWrapper" style="margin-top:0">
     <aside class="sidebar" id="sidebar">
+
+      <!-- FIX: Corrected logo structure — image + text properly nested -->
       <div class="sidebar-logo">
         <div class="logo-mark">
-          <img src="https://barkornamentjaz.github.io/Production-Leave/images.jpg" alt="Bark Ornament" style="width:100%;max-width:180px;height:60px;object-fit:contain;border-radius:4px;">
-        </div>
+          <div class="logo-img-wrap">
+            <img
+              id="companyLogoImg"
+              src="https://barkornamentjaz.github.io/Production-Leave/images.jpg"
+              alt="Bark Ornament"
+              onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block';"
+            >
+            <span id="logoFallback" class="logo-img-fallback">🌿</span>
+          </div>
           <div class="logo-text">
             <h2>BARK ORNAMENT</h2>
             <p>Leave Management</p>
@@ -569,12 +638,13 @@ input, select, textarea { font-family: inherit; }
 
       <div class="sidebar-footer">
         <div>Production Team LMS</div>
-        <div style="margin-top:2px">v1.0 · 2025</div>
+        <div style="margin-top:2px">v1.1 · 2025</div>
       </div>
     </aside>
 
     <div class="main-content">
       <header class="top-header">
+        <!-- FIX: menu toggle now properly hidden on desktop, shown on mobile via CSS -->
         <button id="menuToggle" class="btn btn-ghost btn-icon" style="display:none;font-size:18px">☰</button>
         <h1 id="pageTitle">Dashboard</h1>
         <span id="headerDate" class="header-date"></span>
@@ -589,10 +659,8 @@ input, select, textarea { font-family: inherit; }
     </div>
   </div>`;
 
-  // Inject layout before the body content
   document.body.insertAdjacentHTML('afterbegin', SIDEBAR_HTML);
 })();
-
 </script>
 
 <!-- PAGE BODY -->
@@ -636,13 +704,22 @@ input, select, textarea { font-family: inherit; }
       <div class="card-header"><span>🏖️</span><h3>On Leave Today</h3></div>
       <div id="dash-on-leave-names" class="on-leave-list"></div>
     </div>
+
+    <!-- FIX: Balance card — now shows full name + used/remaining + colour legend -->
     <div class="card span-2">
       <div class="card-header">
-        <span>📊</span><h3>Leave Balance Overview</h3>
+        <span>📊</span>
+        <h3>Leave Balance Overview</h3>
         <span style="font-size:11px;color:var(--gray-400)">Annual Leave · Current Year</span>
+      </div>
+      <div class="balance-legend">
+        <span><span class="balance-legend-dot" style="background:var(--teal)"></span>Normal</span>
+        <span><span class="balance-legend-dot" style="background:var(--gold)"></span>≥70% used</span>
+        <span><span class="balance-legend-dot" style="background:var(--red)"></span>≥90% used</span>
       </div>
       <div id="dash-balance-list" class="balance-bar-wrap"></div>
     </div>
+
     <div class="card span-3">
       <div class="card-header"><span>📅</span><h3>This Month's Leave Summary</h3></div>
       <div id="dash-monthly-summary" class="card-body"></div>
@@ -653,17 +730,13 @@ input, select, textarea { font-family: inherit; }
 <script>
 /* ============================================================
    BARK ORNAMENT — LEAVE MANAGEMENT SYSTEM
-   js/core.js  |  Data Layer, API, Navigation, Utilities
+   core.js  |  Data Layer, API, Navigation, Utilities
    ============================================================ */
-
 'use strict';
 
 /* ── 1. CONFIGURATION ─────────────────────────────────────── */
-
-// ▶▶▶ PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT URL HERE ◀◀◀
 const API_URL = 'https://script.google.com/macros/s/AKfycbw4hNM5k5Di9lRq60KeORH3t_gn31BohqPN0_Le98XGWEQ4Jb7k8zALD5tB34dBkmMn/exec';
 
-// App state — all data lives here in memory
 const STATE = {
   employees: [],
   leaveRecords: [],
@@ -677,8 +750,6 @@ const STATE = {
 };
 
 /* ── 2. PAGE ROUTING ──────────────────────────────────────── */
-
-// Each HTML file corresponds to a page key
 const PAGE_FILES = {
   dashboard:    'index.html',
   employees:    'employees.html',
@@ -694,7 +765,6 @@ function navigateTo(page) {
   if (file) window.location.href = file;
 }
 
-// Determine current page from filename
 function currentPage() {
   const path = window.location.pathname.split('/').pop() || 'index.html';
   for (const [key, file] of Object.entries(PAGE_FILES)) {
@@ -703,7 +773,6 @@ function currentPage() {
   return 'dashboard';
 }
 
-// Highlight active nav item
 function setActiveNav() {
   const page = currentPage();
   document.querySelectorAll('.nav-item').forEach(item => {
@@ -723,7 +792,6 @@ function setActiveNav() {
 }
 
 /* ── 3. API FUNCTIONS ─────────────────────────────────────── */
-
 async function apiFetch(action, payload = {}) {
   if (!API_URL) {
     return demoAction(action, payload);
@@ -741,7 +809,6 @@ async function apiFetch(action, payload = {}) {
 }
 
 /* ── 4. LOAD ALL DATA ─────────────────────────────────────── */
-
 async function loadAllData() {
   showLoading(true);
   try {
@@ -759,7 +826,7 @@ async function loadAllData() {
     }
     STATE.loaded = true;
   } catch (e) {
-    toast('Failed to load data. Check your API URL in js/core.js', 'error');
+    toast('Failed to load data. Check your API URL in core.js', 'error');
   } finally {
     showLoading(false);
     afterLoad();
@@ -771,12 +838,10 @@ function afterLoad() {
     seedDemoData();
   }
   updateExcessBadge();
-  // Call page-specific init if it exists
   if (typeof pageInit === 'function') pageInit();
 }
 
 /* ── 5. DEMO / SEED DATA ──────────────────────────────────── */
-
 function seedDemoData() {
   STATE.employees = [
     { id:'E001', name:'Kumara Perera',     dept:'Production',     entitlement:21, joinDate:'2020-01-15', status:'Active' },
@@ -830,7 +895,6 @@ function demoAction(action, payload) {
 }
 
 /* ── 6. HOLIDAY HELPERS ───────────────────────────────────── */
-
 function isHoliday(dateStr) { return STATE.holidays.some(h => h.date === dateStr); }
 function isSunday(dateStr)  { return new Date(dateStr).getDay() === 0; }
 function isSaturday(dateStr){ return new Date(dateStr).getDay() === 6; }
@@ -851,7 +915,6 @@ function calcLeaveDays(startStr, endStr, leaveType) {
 function dateStr(d) { return d.toISOString().split('T')[0]; }
 
 /* ── 7. EMPLOYEE HELPERS ──────────────────────────────────── */
-
 function getActiveEmployees() { return STATE.employees.filter(e => e.status === 'Active'); }
 function getEmployee(id)       { return STATE.employees.find(e => e.id === id); }
 
@@ -867,7 +930,6 @@ function genLeaveId() {
 }
 
 /* ── 8. LEAVE STATS ───────────────────────────────────────── */
-
 function currentYear() { return new Date().getFullYear(); }
 
 function getLeaveStats(empId) {
@@ -901,12 +963,10 @@ function getShlThisMonth(empId) {
 }
 
 /* ── 9. MODALS ────────────────────────────────────────────── */
-
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 /* ── 10. LOADING & TOAST ──────────────────────────────────── */
-
 function showLoading(on) {
   const el = document.getElementById('loadingOverlay');
   if (el) el.style.display = on ? 'flex' : 'none';
@@ -922,7 +982,6 @@ function toast(msg, type = 'info') {
 }
 
 /* ── 11. BADGE & FILTERS ──────────────────────────────────── */
-
 function updateExcessBadge() {
   const now   = new Date();
   const ym    = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
@@ -952,7 +1011,6 @@ function populateEmpSelect(selectId) {
 }
 
 /* ── 12. LEAVE CODE & BADGE HELPERS ──────────────────────── */
-
 function leaveCode(type) {
   const map = {
     'Annual Leave':'AL','Casual Leave':'CL','Sick Leave':'SL',
@@ -970,7 +1028,6 @@ function leaveBadgeClass(type) {
 }
 
 /* ── 13. SETTINGS SAVE ────────────────────────────────────── */
-
 async function saveSettings() {
   STATE.settings.company  = document.getElementById('set-company').value.trim();
   STATE.settings.shlLimit = parseInt(document.getElementById('set-shl-limit').value);
@@ -984,7 +1041,7 @@ async function saveSettings() {
 }
 
 async function setupSheets() {
-  if (!API_URL) { toast('Configure API_URL in js/core.js first', 'warning'); return; }
+  if (!API_URL) { toast('Configure API_URL in core.js first', 'warning'); return; }
   showLoading(true);
   try {
     await apiFetch('setupSheets');
@@ -997,7 +1054,6 @@ async function setupSheets() {
 function printReport() { window.print(); }
 
 /* ── 14. INIT ─────────────────────────────────────────────── */
-
 document.addEventListener('DOMContentLoaded', () => {
   // Set header date
   const hd = document.getElementById('headerDate');
@@ -1013,12 +1069,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (aw) aw.style.marginTop = '40px';
   }
 
-  // Nav click → navigate to other pages
+  // Nav click → navigate
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => navigateTo(item.dataset.page));
   });
 
-  // Mobile menu toggle
+  // FIX: Mobile menu toggle
   const menuToggle = document.getElementById('menuToggle');
   if (menuToggle) {
     menuToggle.addEventListener('click', () => {
@@ -1033,15 +1089,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Set active nav item for current page
   setActiveNav();
-
-  // Load all data then call page-specific init
   loadAllData();
 });
-
 </script>
+
 <script>
+/* ============================================================
+   Dashboard page logic
+   ============================================================ */
 function pageInit() {
   renderDashboard();
 }
@@ -1052,14 +1108,15 @@ function renderDashboard() {
   const ym     = today.slice(0, 7);
   const active = getActiveEmployees();
 
+  /* ── Stat cards ── */
   document.getElementById('dash-total-emp').textContent = active.length;
 
   const onLeaveToday = STATE.leaveRecords.filter(r =>
     r.status === 'Approved' && r.type !== 'Short Leave' &&
     r.start <= today && r.end >= today
   );
-  const onLeaveTodayNames = [...new Set(onLeaveToday.map(r => r.empId))];
-  document.getElementById('dash-on-leave').textContent = onLeaveTodayNames.length;
+  const onLeaveTodayIds = [...new Set(onLeaveToday.map(r => r.empId))];
+  document.getElementById('dash-on-leave').textContent = onLeaveTodayIds.length;
 
   const limit = STATE.settings.shlLimit || 1;
   const excessEmps = new Set();
@@ -1074,57 +1131,88 @@ function renderDashboard() {
 
   const totalDays = STATE.leaveRecords
     .filter(r => r.status === 'Approved' && new Date(r.start).getFullYear() === yr)
-    .reduce((s, r) => s + parseFloat(r.days||0), 0);
+    .reduce((s, r) => s + parseFloat(r.days || 0), 0);
   document.getElementById('dash-total-days').textContent = totalDays.toFixed(1);
 
-  // On leave list
+  /* ── On leave list ── */
   const onLeaveList = document.getElementById('dash-on-leave-names');
-  onLeaveList.innerHTML = onLeaveTodayNames.length === 0
-    ? '<div class="empty-state"><div class="empty-icon">✅</div>No one on leave today</div>'
-    : onLeaveTodayNames.map(eid => {
-        const emp = getEmployee(eid);
-        const rec = onLeaveToday.find(r => r.empId === eid);
-        return `<div class="on-leave-item">
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:12px;color:var(--navy)">${emp ? emp.name : eid}</div>
-            <div style="font-size:11px;color:var(--gray-400)">${emp ? emp.dept : ''}</div>
-          </div>
-          <span class="on-leave-badge">${leaveCode(rec ? rec.type : '')}</span>
-        </div>`;
-      }).join('');
+  if (onLeaveTodayIds.length === 0) {
+    onLeaveList.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div>No one on leave today</div>';
+  } else {
+    onLeaveList.innerHTML = onLeaveTodayIds.map(eid => {
+      const emp = getEmployee(eid);
+      const rec = onLeaveToday.find(r => r.empId === eid);
+      return `<div class="on-leave-item">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:12px;color:var(--navy)">${emp ? emp.name : eid}</div>
+          <div style="font-size:11px;color:var(--gray-400)">${emp ? emp.dept : ''}</div>
+        </div>
+        <span class="on-leave-badge">${leaveCode(rec ? rec.type : '')}</span>
+      </div>`;
+    }).join('');
+  }
 
-  // Balance bars
+  /* ── FIX: Balance bars — show FULL name, used days, remaining days ── */
   const balanceList = document.getElementById('dash-balance-list');
-  balanceList.innerHTML = active.slice(0, 8).map(e => {
-    const stats = getLeaveStats(e.id);
-    const pct   = stats.entitlement > 0 ? Math.min(100, (stats.al / stats.entitlement) * 100) : 0;
-    const cls   = pct >= 90 ? 'over' : pct >= 70 ? 'warn' : '';
-    return `<div class="balance-bar-row">
-      <div class="balance-bar-name" title="${e.name}">${e.name.split(' ')[0]}</div>
-      <div class="balance-bar-track">
-        <div class="balance-bar-fill ${cls}" style="width:${pct}%"></div>
-      </div>
-      <div class="balance-bar-label">${stats.al}/${stats.entitlement}d</div>
-    </div>`;
-  }).join('');
+  const empToShow = active.filter(e => e.entitlement > 0); // only employees with entitlement
 
-  // Monthly summary
+  if (empToShow.length === 0) {
+    balanceList.innerHTML = '<div class="empty-state">No entitlement data available</div>';
+  } else {
+    balanceList.innerHTML = empToShow.map(e => {
+      const stats = getLeaveStats(e.id);
+      const used  = stats.al;
+      const total = stats.entitlement;
+      const remaining = Math.max(0, total - used);
+      const pct = total > 0 ? Math.min(100, (used / total) * 100) : 0;
+      const fillCls = pct >= 90 ? 'over' : pct >= 70 ? 'warn' : '';
+      const labelColor = pct >= 90 ? 'var(--red)' : pct >= 70 ? 'var(--gold)' : 'var(--gray-600)';
+
+      return `<div class="balance-bar-row" title="${e.name} — Used: ${used}d | Remaining: ${remaining}d | Total: ${total}d">
+        <div class="balance-bar-name">${e.name}</div>
+        <div class="balance-bar-track">
+          <div class="balance-bar-fill ${fillCls}" style="width:${pct.toFixed(1)}%"></div>
+        </div>
+        <div class="balance-bar-label" style="color:${labelColor}">${used}/${total}d</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── Monthly summary ── */
   const monthRecs = STATE.leaveRecords.filter(r => r.status === 'Approved' && r.start.startsWith(ym));
   const types = ['Annual Leave','Casual Leave','Sick Leave','Half Day Leave','Short Leave'];
+
   document.getElementById('dash-monthly-summary').innerHTML = `
-    <table class="month-summary-table">
-      <thead><tr>
-        ${types.map(t => `<th>${leaveCode(t)} ${t}</th>`).join('')}
-        <th>Total Employees on Leave</th>
-      </tr></thead>
-      <tbody><tr>
-        ${types.map(t => {
-          const cnt = monthRecs.filter(r => r.type === t).length;
-          return `<td style="text-align:center;font-weight:700;color:var(--navy)">${cnt}</td>`;
-        }).join('')}
-        <td style="text-align:center;font-weight:700;color:var(--teal)">${new Set(monthRecs.map(r => r.empId)).size}</td>
-      </tr></tbody>
-    </table>`;
+    <div class="table-wrap">
+      <table class="month-summary-table">
+        <thead>
+          <tr>
+            <th>Leave Type</th>
+            <th style="text-align:center">Code</th>
+            <th style="text-align:center">Count</th>
+            <th style="text-align:center">Days</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${types.map(t => {
+            const recs = monthRecs.filter(r => r.type === t);
+            const cnt  = recs.length;
+            const days = recs.reduce((s, r) => s + parseFloat(r.days || 0), 0);
+            return `<tr>
+              <td>${t}</td>
+              <td style="text-align:center"><span class="badge ${leaveBadgeClass(t)}">${leaveCode(t)}</span></td>
+              <td style="text-align:center;font-weight:700;color:var(--navy)">${cnt}</td>
+              <td style="text-align:center;font-weight:700;color:var(--teal)">${days > 0 ? days.toFixed(1) : '—'}</td>
+            </tr>`;
+          }).join('')}
+          <tr style="border-top:2px solid var(--gray-200);font-weight:700">
+            <td colspan="2" style="color:var(--gray-500)">Unique Employees on Leave</td>
+            <td style="text-align:center;color:var(--teal)">${new Set(monthRecs.map(r => r.empId)).size}</td>
+            <td style="text-align:center;color:var(--teal)">${monthRecs.reduce((s,r)=>s+parseFloat(r.days||0),0).toFixed(1)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
 }
 
 // Move page content into the layout container
