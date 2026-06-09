@@ -1,265 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Calendar — Bark Ornament LMS</title>
+  <style>
+/* ============================================================
+   BARK ORNAMENT — LEAVE MANAGEMENT SYSTEM
+   style.css  |  v1.0  |  2025
+   ============================================================ */
 
-<style>
-  :root {
-    --navy: #0f2744; --navy-light: #1a3a6b; --teal: #0d9488; --teal-light: #14b8a6;
-    --gold: #d97706; --red: #dc2626; --red-light: #fee2e2; --green: #16a34a;
-    --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb; --gray-300: #d1d5db;
-    --gray-400: #9ca3af; --gray-500: #6b7280; --gray-600: #4b5563; --gray-700: #374151;
-    --gray-800: #1f2937; --radius: 8px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px; color: var(--gray-800); background: transparent; }
-  .header-bar {
-    display: flex; align-items: center; gap: 14px; padding: 12px 16px;
-    background: var(--navy); border-radius: var(--radius) var(--radius) 0 0;
-    margin-bottom: 12px;
-  }
-  .logo-img { height: 48px; width: 80px; object-fit: contain; border-radius: 4px; background: #fff; padding: 3px; }
-  .logo-text h2 { font-size: 13px; font-weight: 800; letter-spacing: .08em; color: #fff; text-transform: uppercase; }
-  .logo-text p  { font-size: 10px; color: rgba(255,255,255,.5); margin-top: 1px; }
-  .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 4px 10px; }
-  select, button {
-    padding: 6px 10px; border-radius: 6px; border: 1.5px solid var(--gray-200);
-    font-size: 12px; font-family: inherit; color: var(--gray-700); background: #fff; cursor: pointer; outline: none;
-  }
-  select:focus { border-color: var(--teal); }
-  button { background: var(--teal); color: #fff; border-color: var(--teal); font-weight: 600; }
-  button:hover { background: #0b8077; }
-  .month-label { font-size: 14px; font-weight: 700; color: var(--navy); margin-left: auto; }
-  .legend { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 4px 10px; }
-  .leg { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
-  .leg-AL  { background: #dbeafe; color: #1d4ed8; }
-  .leg-CL  { background: #d0faf4; color: var(--teal); }
-  .leg-SL  { background: #fce7f3; color: #9d174d; }
-  .leg-HD  { background: #fef3c7; color: #92400e; }
-  .leg-SHL { background: var(--red-light); color: var(--red); }
-  .leg-M   { background: #ede9fe; color: #5b21b6; }
-  .leg-P   { background: #fef9c3; color: #713f12; }
-  .tbl-wrap { overflow-x: auto; border-radius: 0 0 var(--radius) var(--radius); border: 1px solid var(--gray-200); }
-  table { border-collapse: collapse; font-size: 11px; min-width: 800px; width: 100%; }
-  th, td { border: 1px solid var(--gray-200); padding: 4px 5px; text-align: center; }
-  thead th { background: var(--navy); color: #fff; font-weight: 700; }
-  thead th.emp-col { background: var(--navy-light); text-align: left; min-width: 130px; padding-left: 8px; }
-  td.emp-name { text-align: left; font-weight: 600; color: var(--navy); background: var(--gray-50); padding-left: 8px; white-space: nowrap; }
-  .sub { font-size: 9px; color: var(--gray-400); display: block; font-weight: 400; }
-  .code { display: inline-block; padding: 2px 5px; border-radius: 3px; font-size: 10px; font-weight: 700; }
-  .code-AL  { background: #dbeafe; color: #1d4ed8; }
-  .code-CL  { background: #d0faf4; color: var(--teal); }
-  .code-SL  { background: #fce7f3; color: #9d174d; }
-  .code-HD  { background: #fef3c7; color: #92400e; }
-  .code-SHL { background: var(--red-light); color: var(--red); }
-  .day-hol  { background: #fffde7 !important; }
-  .day-sat  { background: #f9fafb !important; }
-  .day-sun  { background: #f5f5f5 !important; }
-  .hol-tip  { font-size: 9px; color: #92400e; font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 42px; margin: 0 auto; }
-  .hol-badge { font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; display: inline-block; }
-  .hol-merc  { background: #ede9fe; color: #5b21b6; }
-  .hol-poya  { background: #fef3c7; color: #92400e; }
-  .hol-company { background: #d0faf4; color: var(--teal); }
-  .tooltip-wrap { position: relative; display: inline-block; }
-  .tooltip-wrap:hover .tooltip-box { display: block; }
-  .tooltip-box { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; font-size: 10px; padding: 4px 7px; border-radius: 4px; white-space: nowrap; z-index: 10; pointer-events: none; margin-bottom: 3px; }
-  .empty { text-align: center; padding: 32px; color: var(--gray-400); font-size: 13px; }
-  @media print {
-    .toolbar, .legend-bar-wrap button { display: none !important; }
-    .tbl-wrap { border: none; }
-  }
-</style>
+/* ── CSS Variables ── */
+:root {
+  --navy:        #0f2744;
+  --navy-light:  #1a3a6b;
+  --teal:        #0d9488;
+  --teal-light:  #14b8a6;
+  --gold:        #d97706;
+  --red:         #dc2626;
+  --red-light:   #fee2e2;
+  --green:       #16a34a;
+  --green-light: #dcfce7;
+  --blue-light:  #eff6ff;
 
-<div class="header-bar">
-  <img class="logo-img" src="https://raw.githubusercontent.com/barkornamentJaz/Production-Leave/main/images.jpg" alt="Bark Ornament" onerror="this.style.display='none'">
-  <div class="logo-text">
-    <h2>Bark Ornament</h2>
-    <p>Leave Management System</p>
-  </div>
+  --gray-50:   #f9fafb;
+  --gray-100:  #f3f4f6;
+  --gray-200:  #e5e7eb;
+  --gray-300:  #d1d5db;
+  --gray-400:  #9ca3af;
+  --gray-500:  #6b7280;
+  --gray-600:  #4b5563;
+  --gray-700:  #374151;
+  --gray-800:  #1f2937;
+  --gray-900:  #111827;
+
+  --sidebar-w: 230px;
+  --header-h:  58px;
+  --radius:    8px;
+  --shadow:    0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.12);
+  --transition: .18s ease;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--gray-100);
+  color: var(--gray-800);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+a { color: var(--teal); text-decoration: none; }
+button { cursor: pointer; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+
+/* ── Loading Overlay ── */
+.loading-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(255,255,255,.92);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 14px;
+}
+.spinner {
+  width: 38px; height: 38px;
+  border: 3px solid var(--gray-200);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Toast ── */
+.toast-container {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 9998; display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  min-width: 260px; max-width: 380px;
+  padding: 12px 18px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-md);
+  animation: slideIn .25s ease;
+  display: flex; align-items: center; gap: 10px;
+}
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } }
+.toast-success { background: var(--green); color: #fff; }
+.toast-error   { background: var(--red);   color: #fff; }
+.toast-info    { background: var(--navy);  color: #fff; }
+.toast-warning { background: var(--gold);  color: #fff; }
+
+/* ── App Wrapper ── */
+.app-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1), width 0.28s cubic-bezier(.4,0,.2,1);
+}
+/* Collapsed state — slides off-screen */
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+.sidebar-logo {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.logo-mark { display: flex; align-items: center; gap: 10px; }
+.logo-icon { font-size: 22px; }
+.logo-text h2 {
+  font-size: 11px; font-weight: 800; letter-spacing: .08em;
+  color: #fff; text-transform: uppercase;
+}
+.logo-text p { font-size: 10px; color: rgba(255,255,255,.45); margin-top: 1px; }
+
+.sidebar-nav { flex: 1; padding: 12px 8px; }
+.nav-section-label {
+  font-size: 9px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(255,255,255,.3);
+  padding: 8px 8px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 6px;
+  font-size: 13px; font-weight: 500; color: rgba(255,255,255,.7);
+  cursor: pointer; position: relative;
+  transition: background var(--transition), color var(--transition);
+}
+.nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+.nav-item.active { background: var(--teal); color: #fff; }
+.nav-icon { font-size: 15px; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto; background: var(--red);
+  color: #fff; font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 10px;
+}
+
+.sidebar-footer {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 10px; color: rgba(255,255,255,.3);
+}
+
+/* ── Main Content ── */
+.main-content {
+  margin-left: var(--sidebar-w);
+  flex: 1; display: flex; flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.28s cubic-bezier(.4,0,.2,1);
+}
+.sidebar.collapsed ~ .main-content,
+.main-content.expanded {
+  margin-left: 0;
+}
+
+/* ── Top Header ── */
+.top-header {
+  height: var(--header-h);
+  background: #fff;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 24px;
+  position: sticky; top: 0; z-index: 50;
+}
+.top-header h1 {
+  font-size: 16px; font-weight: 700;
+  color: var(--navy); flex: 1;
+}
+.header-date { font-size: 12px; color: var(--gray-400); }
+.header-user { display: flex; align-items: center; gap: 8px; }
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--navy); color: #fff;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Page Content ── */
+.page-content { padding: 22px 24px; flex: 1; }
+
+/* ── Card ── */
+.card {
+  background: #fff; border-radius: var(--radius);
+  box-shadow: var(--shadow); overflow: hidden;
+}
+.card-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.card-header h3 { font-size: 13px; font-weight: 700; color: var(--navy); flex: 1; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 600; border: none;
+  transition: background var(--transition), box-shadow var(--transition);
+  white-space: nowrap;
+}
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { background: #0b8077; }
+.btn-outline { background: #fff; color: var(--gray-700); border: 1.5px solid var(--gray-200); }
+.btn-outline:hover { border-color: var(--gray-400); background: var(--gray-50); }
+.btn-ghost { background: transparent; color: var(--gray-500); border: none; }
+.btn-ghost:hover { background: var(--gray-100); }
+.btn-navy { background: var(--navy); color: #fff; border: none; }
+.btn-navy:hover { background: var(--navy-light); }
+.btn-icon { padding: 5px 8px; font-size: 16px; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* ── Calendar Toolbar ── */
+.cal-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap; margin-bottom: 14px;
+}
+.cal-toolbar select {
+  padding: 7px 12px; border-radius: var(--radius);
+  border: 1.5px solid var(--gray-200);
+  font-size: 13px; font-family: inherit;
+  color: var(--gray-700); background: #fff;
+  cursor: pointer; outline: none;
+}
+.cal-toolbar select:focus { border-color: var(--teal); }
+.cal-month-label {
+  margin-left: auto;
+  font-size: 16px; font-weight: 800;
+  color: var(--navy); letter-spacing: .02em;
+}
+
+/* ── Legend ── */
+.cal-legend {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.leg {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 4px;
+  font-size: 11px; font-weight: 700;
+}
+.leg-AL  { background: #dbeafe; color: #1d4ed8; }
+.leg-CL  { background: #d0faf4; color: var(--teal); }
+.leg-SL  { background: #fce7f3; color: #9d174d; }
+.leg-HD  { background: #fef3c7; color: #92400e; }
+.leg-SHL { background: var(--red-light); color: var(--red); }
+.leg-M   { background: #ede9fe; color: #5b21b6; }
+.leg-P   { background: #fef9c3; color: #713f12; }
+.leg-note { font-size: 11px; color: var(--gray-400); padding: 3px 4px; }
+
+/* ── Calendar Table ── */
+.cal-table-wrap { overflow-x: auto; }
+table.cal { border-collapse: collapse; font-size: 11px; min-width: 900px; width: 100%; }
+table.cal th, table.cal td {
+  border: 1px solid var(--gray-200); padding: 5px 4px; text-align: center;
+}
+table.cal thead th {
+  background: var(--navy); color: #fff; font-weight: 700; font-size: 11px;
+}
+table.cal thead th.emp-col {
+  background: var(--navy-light); text-align: left;
+  min-width: 140px; padding-left: 10px;
+}
+table.cal td.emp-name {
+  text-align: left; font-weight: 600; color: var(--navy);
+  background: var(--gray-50); padding-left: 10px; white-space: nowrap;
+}
+table.cal td.emp-name .emp-dept {
+  font-size: 9px; color: var(--gray-400); font-weight: 400; display: block;
+}
+
+/* Day header states */
+.dh-hol  { background: #fffde7 !important; color: #92400e !important; }
+.dh-sat  { background: #f3f4f6 !important; color: var(--gray-500) !important; }
+.dh-sun  { background: #f5f5f5 !important; color: var(--gray-400) !important; }
+
+/* Cell states */
+table.cal td.cell-hol { background: #fffde7; }
+table.cal td.cell-sat { background: #f9fafb; }
+table.cal td.cell-sun { background: #f5f5f5; }
+
+/* Leave code pills */
+.code {
+  display: inline-block; padding: 2px 6px;
+  border-radius: 3px; font-size: 10px; font-weight: 700;
+}
+.code-AL  { background: #dbeafe; color: #1d4ed8; }
+.code-CL  { background: #d0faf4; color: var(--teal); }
+.code-SL  { background: #fce7f3; color: #9d174d; }
+.code-HD  { background: #fef3c7; color: #92400e; }
+.code-SHL { background: var(--red-light); color: var(--red); }
+
+/* Holiday badges in cells */
+.hol-badge {
+  font-size: 9px; font-weight: 700; padding: 1px 4px;
+  border-radius: 3px; display: inline-block;
+}
+.hol-merc    { background: #ede9fe; color: #5b21b6; }
+.hol-poya    { background: #fef3c7; color: #92400e; }
+.hol-company { background: #d0faf4; color: var(--teal); }
+
+/* Tooltip */
+.tooltip-wrap { position: relative; display: inline-block; }
+.tooltip-wrap:hover .tooltip-box { display: block; }
+.tooltip-box {
+  display: none; position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%); background: var(--navy);
+  color: #fff; font-size: 10px; padding: 4px 7px;
+  border-radius: 4px; white-space: nowrap; z-index: 10;
+  pointer-events: none; margin-bottom: 3px;
+}
+
+/* Present / Saturday text */
+.txt-present { font-size: 10px; color: var(--gray-400); }
+.txt-sat     { font-size: 10px; color: var(--gray-300); }
+
+/* Empty state */
+.cal-empty { text-align: center; padding: 48px 20px; color: var(--gray-400); font-size: 13px; }
+
+/* ── Print ── */
+@media print {
+  .sidebar, .top-header, .cal-toolbar .btn, #printBtn, #refreshBtn { display: none !important; }
+  .main-content { margin-left: 0 !important; }
+  .page-content { padding: 0 !important; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar.collapsed { transform: translateX(-100%); }
+  .main-content { margin-left: 0; }
+  #menuToggle { display: flex !important; }
+  .cal-month-label { font-size: 13px; }
+}
+  </style>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f2744'/><text y='22' x='5' font-size='18'>🌿</text></svg>">
+</head>
+<body>
+
+<!-- ── LAYOUT CHROME ── -->
+<div id="loadingOverlay" class="loading-overlay">
+  <div class="spinner"></div>
+  <p style="color:var(--gray-500);font-size:13px">Loading data…</p>
 </div>
+<div id="toastContainer" class="toast-container"></div>
 
-<div class="toolbar">
-  <select id="cal-month">
-    <option value="01">January</option><option value="02">February</option>
-    <option value="03">March</option><option value="04">April</option>
-    <option value="05">May</option><option value="06">June</option>
-    <option value="07">July</option><option value="08">August</option>
-    <option value="09">September</option><option value="10">October</option>
-    <option value="11">November</option><option value="12">December</option>
-  </select>
-  <select id="cal-year">
-    <option value="2024">2024</option>
-    <option value="2025">2025</option>
-    <option value="2026" selected>2026</option>
-  </select>
-  <select id="cal-emp"></select>
-  <button onclick="buildCalendar()">Refresh</button>
-  <button onclick="window.print()" style="background:var(--navy);border-color:var(--navy)">Print</button>
-  <span class="month-label" id="month-label"></span>
-</div>
+<div class="app-wrapper">
 
-<div class="legend">
-  <span class="leg leg-AL">AL Annual Leave</span>
-  <span class="leg leg-CL">CL Casual Leave</span>
-  <span class="leg leg-SL">SL Sick Leave</span>
-  <span class="leg leg-HD">HD Half Day</span>
-  <span class="leg leg-SHL">SHL Short Leave</span>
-  <span class="leg leg-M" style="background:#ede9fe;color:#5b21b6">M Mercantile Hol</span>
-  <span class="leg leg-P" style="background:#fef9c3;color:#713f12">★ Poya Day</span>
-  <span style="font-size:10px;color:var(--gray-400);padding:2px 4px">P = Present · S = Saturday</span>
-</div>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <img src="https://barkornamentjaz.github.io/Production-Leave/images.jpg" alt="Bark Ornament" style="width:100%;max-width:180px;height:60px;object-fit:contain;border-radius:4px;">
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:6px;text-align:center;line-height:1.4;">Bark Ornament Private Limited<br>Leave Management</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item" data-page="dashboard">  <span class="nav-icon">📊</span> Dashboard</div>
+      <div class="nav-item" data-page="employees">  <span class="nav-icon">👥</span> Employees</div>
+      <div class="nav-item" data-page="leave-entry"><span class="nav-icon">📝</span> Leave Entry</div>
+      <div class="nav-item active" data-page="calendar"><span class="nav-icon">📅</span> Monthly Calendar</div>
+      <div class="nav-section-label" style="margin-top:8px">Analytics</div>
+      <div class="nav-item" data-page="reports">
+        <span class="nav-icon">📈</span> Reports
+        <span id="excessBadge" class="nav-badge" style="display:none">0</span>
+      </div>
+      <div class="nav-section-label" style="margin-top:8px">Configuration</div>
+      <div class="nav-item" data-page="holidays"><span class="nav-icon">🗓️</span> Holidays</div>
+      <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span> Settings</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div>Production Team LMS</div>
+      <div style="margin-top:2px">v1.0 · 2025</div>
+    </div>
+  </aside>
 
-<div class="tbl-wrap" id="cal-out"></div>
+  <!-- Main -->
+  <div class="main-content" id="mainContent">
+    <header class="top-header">
+      <button id="menuToggle" class="btn btn-ghost btn-icon" title="Toggle sidebar">☰</button>
+      <h1>Monthly Calendar</h1>
+      <span id="headerDate" class="header-date"></span>
+      <div class="header-user">
+        <div class="avatar">OM</div>
+        <span style="font-size:13px;font-weight:600;color:var(--gray-700)">Ops Manager</span>
+      </div>
+    </header>
 
+    <div class="page-content">
+
+      <!-- Toolbar -->
+      <div class="cal-toolbar">
+        <select id="cal-month">
+          <option value="01">January</option><option value="02">February</option>
+          <option value="03">March</option><option value="04">April</option>
+          <option value="05">May</option><option value="06">June</option>
+          <option value="07">July</option><option value="08">August</option>
+          <option value="09">September</option><option value="10">October</option>
+          <option value="11">November</option><option value="12">December</option>
+        </select>
+        <select id="cal-year">
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+        </select>
+        <select id="cal-emp"></select>
+        <button class="btn btn-primary" id="refreshBtn" onclick="buildCalendar()">⟳ Refresh</button>
+        <button class="btn btn-navy"    id="printBtn"   onclick="window.print()">🖨 Print</button>
+        <span class="cal-month-label" id="month-label"></span>
+      </div>
+
+      <!-- Legend -->
+      <div class="cal-legend">
+        <span class="leg leg-AL">AL Annual Leave</span>
+        <span class="leg leg-CL">CL Casual Leave</span>
+        <span class="leg leg-SL">SL Sick Leave</span>
+        <span class="leg leg-HD">HD Half Day</span>
+        <span class="leg leg-SHL">SHL Short Leave</span>
+        <span class="leg leg-M" style="background:#ede9fe;color:#5b21b6">M Mercantile</span>
+        <span class="leg leg-P" style="background:#fef9c3;color:#713f12">★ Poya Day</span>
+        <span class="leg-note">P = Present · S = Saturday</span>
+      </div>
+
+      <!-- Calendar card -->
+      <div class="card">
+        <div class="cal-table-wrap" id="cal-out">
+          <div class="cal-empty">Loading calendar…</div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /app-wrapper -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     CORE.JS  — shared data layer (mirrors your core.js exactly)
+     ═══════════════════════════════════════════════════════════ -->
 <script>
-const SL_HOLIDAYS = {
-  "2025-01-13": { name:"Duruthu Poya", type:"poya" },
-  "2025-01-14": { name:"Tamil Thai Pongal Day", type:"merc" },
-  "2025-02-04": { name:"National Day", type:"merc" },
-  "2025-02-12": { name:"Navam Poya", type:"poya" },
-  "2025-03-13": { name:"Medin Poya", type:"poya" },
-  "2025-04-12": { name:"Bak Poya", type:"poya" },
-  "2025-04-13": { name:"Day before Sinhala & Tamil New Year", type:"merc" },
-  "2025-04-14": { name:"Sinhala & Tamil New Year", type:"merc" },
-  "2025-04-18": { name:"Good Friday", type:"merc" },
-  "2025-05-01": { name:"May Day", type:"merc" },
-  "2025-05-12": { name:"Vesak Poya", type:"poya" },
-  "2025-05-13": { name:"Day following Vesak", type:"merc" },
-  "2025-06-10": { name:"Eid ul Adha", type:"merc" },
-  "2025-06-11": { name:"Poson Poya", type:"poya" },
-  "2025-07-10": { name:"Esala Poya", type:"poya" },
-  "2025-08-09": { name:"Nikini Poya", type:"poya" },
-  "2025-09-05": { name:"Milad un Nabi", type:"merc" },
-  "2025-09-07": { name:"Binara Poya", type:"poya" },
-  "2025-10-02": { name:"Id ul Fitr (makeup)", type:"merc" },
-  "2025-10-06": { name:"Vap Poya", type:"poya" },
-  "2025-10-20": { name:"Deepavali", type:"merc" },
-  "2025-11-05": { name:"Ill Poya", type:"poya" },
-  "2025-12-04": { name:"Unduvap Poya", type:"poya" },
-  "2025-12-25": { name:"Christmas Day", type:"merc" },
-  "2026-01-13": { name:"Duruthu Poya", type:"poya" },
-  "2026-01-14": { name:"Tamil Thai Pongal Day", type:"merc" },
-  "2026-02-04": { name:"National Day", type:"merc" },
-  "2026-02-11": { name:"Navam Poya", type:"poya" },
-  "2026-03-02": { name:"Maha Sivarathri", type:"merc" },
-  "2026-03-12": { name:"Medin Poya / Ramadan start adj.", type:"poya" },
-  "2026-04-02": { name:"Good Friday", type:"merc" },
-  "2026-04-11": { name:"Bak Poya", type:"poya" },
-  "2026-04-13": { name:"Day before Sinhala & Tamil New Year", type:"merc" },
-  "2026-04-14": { name:"Sinhala & Tamil New Year", type:"merc" },
-  "2026-05-01": { name:"May Day", type:"merc" },
-  "2026-05-11": { name:"Vesak Poya", type:"poya" },
-  "2026-05-12": { name:"Day following Vesak", type:"merc" },
-  "2026-05-30": { name:"Eid ul Adha", type:"merc" },
-  "2026-06-10": { name:"Poson Poya", type:"poya" },
-  "2026-07-10": { name:"Esala Poya", type:"poya" },
-  "2026-08-08": { name:"Nikini Poya", type:"poya" },
-  "2026-09-07": { name:"Binara Poya", type:"poya" },
-  "2026-10-06": { name:"Vap Poya", type:"poya" },
-  "2026-11-05": { name:"Ill Poya / Deepavali", type:"poya" },
-  "2026-12-04": { name:"Unduvap Poya", type:"poya" },
-  "2026-12-25": { name:"Christmas Day", type:"merc" }
+'use strict';
+
+/* ── 1. CONFIG ── */
+const API_URL = 'https://script.google.com/macros/s/AKfycbw4hNM5k5Di9lRq60KeORH3t_gn31BohqPN0_Le98XGWEQ4Jb7k8zALD5tB34dBkmMn/exec';
+
+const STATE = {
+  employees: [],
+  leaveRecords: [],
+  holidays: [],      // ← populated from your Google Sheet / holidays.html entries
+  settings: { company: 'Bark Ornament (Pvt) Ltd', shlLimit: 1, satRule: 0.5 },
+  loaded: false
 };
 
-const EMPLOYEES = [
-  { id:'E001', name:'Kumara Perera',     dept:'Production' },
-  { id:'E002', name:'Nimal Fernando',    dept:'Finishing' },
-  { id:'E003', name:'Sumalee Silva',     dept:'Production' },
-  { id:'E004', name:'Rohan Wijesinghe',  dept:'Printing' },
-  { id:'E005', name:'Kamala Rajapaksa',  dept:'Packaging' },
-  { id:'E006', name:'Thilak Bandara',    dept:'Administration' },
-  { id:'E007', name:'Priya Herath',      dept:'Finishing' }
-];
+/* ── 2. NAV ── */
+const PAGE_FILES = {
+  dashboard: 'index.html', employees: 'employees.html',
+  'leave-entry': 'leave-entry.html', calendar: 'calendar.html',
+  reports: 'reports.html', holidays: 'holidays.html', settings: 'settings.html'
+};
+function navigateTo(page) { const f = PAGE_FILES[page]; if (f) window.location.href = f; }
 
-const now = new Date();
-const LEAVE = {};
-const yr = now.getFullYear(), mo = String(now.getMonth()+1).padStart(2,'0');
-const samples = [
-  ['E001','Annual Leave', `${yr}-${mo}-03`,`${yr}-${mo}-05`],
-  ['E002','Sick Leave',   `${yr}-${mo}-07`,`${yr}-${mo}-07`],
-  ['E003','Short Leave',  `${yr}-${mo}-10`,`${yr}-${mo}-10`],
-  ['E003','Short Leave',  `${yr}-${mo}-15`,`${yr}-${mo}-15`],
-  ['E001','Casual Leave', `${yr}-${mo}-18`,`${yr}-${mo}-18`],
-  ['E004','Half Day Leave',`${yr}-${mo}-20`,`${yr}-${mo}-20`],
-  ['E005','Annual Leave', `${yr}-${mo}-22`,`${yr}-${mo}-23`]
-];
-samples.forEach(([empId, type, start, end]) => {
-  if (!LEAVE[empId]) LEAVE[empId] = {};
-  const s = new Date(start), e = new Date(end);
-  for (let d = new Date(s); d <= e; d.setDate(d.getDate()+1)) {
-    const ds = d.toISOString().split('T')[0];
-    LEAVE[empId][ds] = type;
+/* ── 3. API ── */
+async function apiFetch(action, payload = {}) {
+  try {
+    const res = await fetch(API_URL + '?action=' + action, {
+      method: 'POST', body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch (e) {
+    console.error('API Error:', e);
+    return { success: false, data: [] };
   }
-});
+}
 
-const typeCode = { 'Annual Leave':'AL','Casual Leave':'CL','Sick Leave':'SL','Half Day Leave':'HD','Short Leave':'SHL' };
+/* ── 4. LOAD ── */
+async function loadAllData() {
+  showLoading(true);
+  try {
+    const [empRes, leaveRes, holRes, setRes] = await Promise.all([
+      apiFetch('getEmployees'),
+      apiFetch('getLeaveRecords'),
+      apiFetch('getHolidays'),
+      apiFetch('getSettings')
+    ]);
+    STATE.employees    = empRes.data   || [];
+    STATE.leaveRecords = leaveRes.data || [];
+    STATE.holidays     = holRes.data   || [];
+    if (setRes.data) STATE.settings = { ...STATE.settings, ...setRes.data };
+    STATE.loaded = true;
+  } catch (e) {
+    toast('Failed to load data. Check API URL.', 'error');
+  } finally {
+    showLoading(false);
+    afterLoad();
+  }
+}
 
-function ds(d) { return d.toISOString().split('T')[0]; }
+function afterLoad() {
+  updateExcessBadge();
+  if (typeof pageInit === 'function') pageInit();
+}
+/* ── 6. HELPERS ── */
+function isHoliday(dateStr) { return STATE.holidays.some(h => h.date === dateStr); }
+function getHoliday(dateStr) { return STATE.holidays.find(h => h.date === dateStr) || null; }
+function isSunday(dateStr)   { return new Date(dateStr).getDay() === 0; }
+function isSaturday(dateStr) { return new Date(dateStr).getDay() === 6; }
+function dateStr(d)          { return d.toISOString().split('T')[0]; }
+function getActiveEmployees(){ return STATE.employees.filter(e => e.status !== 'Inactive'); }
+
+function showLoading(on) {
+  const el = document.getElementById('loadingOverlay');
+  if (el) el.style.display = on ? 'flex' : 'none';
+}
+function toast(msg, type = 'info') {
+  const icons = { success:'✅', error:'❌', info:'ℹ️', warning:'⚠️' };
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `<span>${icons[type]||''}</span><span>${msg}</span>`;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function updateExcessBadge() {
+  const now = new Date();
+  const ym  = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const limit = STATE.settings.shlLimit || 1;
+  const excess = new Set();
+  STATE.leaveRecords.filter(r =>
+    r.type === 'Short Leave' && r.status === 'Approved' && r.start && r.start.startsWith(ym)
+  ).forEach(r => {
+    const cnt = STATE.leaveRecords.filter(x =>
+      x.empId === r.empId && x.type === 'Short Leave' &&
+      x.status === 'Approved' && x.start && x.start.startsWith(ym)
+    ).length;
+    if (cnt > limit) excess.add(r.empId);
+  });
+  const badge = document.getElementById('excessBadge');
+  if (badge) { badge.textContent = excess.size; badge.style.display = excess.size > 0 ? 'inline-block' : 'none'; }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CALENDAR PAGE LOGIC
+     Uses STATE.holidays (from Google Sheet via API) —
+     no hardcoded SL_HOLIDAYS object.
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+const TYPE_CODE = {
+  'Annual Leave':'AL', 'Casual Leave':'CL', 'Sick Leave':'SL',
+  'Half Day Leave':'HD', 'Short Leave':'SHL'
+};
+
+/* Build a lookup map from leave records for the selected month */
+function buildLeaveMap(ym) {
+  const map = {};   // map[empId][dateStr] = leaveType
+  STATE.leaveRecords.forEach(r => {
+    if (r.status !== 'Approved') return;
+    const s = new Date(r.start), e = new Date(r.end || r.start);
+    for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+      const ds = dateStr(d);
+      if (!ds.startsWith(ym)) continue;
+      if (!map[r.empId]) map[r.empId] = {};
+      map[r.empId][ds] = r.type;
+    }
+  });
+  return map;
+}
 
 function buildCalendar() {
   const month = document.getElementById('cal-month').value;
   const year  = document.getElementById('cal-year').value;
   const empF  = document.getElementById('cal-emp').value;
-  const ym = `${year}-${month}`;
-  const label = new Date(+year, +month-1, 1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-  document.getElementById('month-label').textContent = label;
+  const ym    = `${year}-${month}`;
+
+  // Update label
+  document.getElementById('month-label').textContent =
+    new Date(+year, +month - 1, 1).toLocaleDateString('en-GB', { month:'long', year:'numeric' });
 
   const daysInMonth = new Date(+year, +month, 0).getDate();
+  const DOWL = ['S','M','T','W','T','F','S'];
+
+  // Build day metadata
   const days = [];
   for (let d = 1; d <= daysInMonth; d++) {
-    const dateS = `${ym}-${String(d).padStart(2,'0')}`;
-    const dow = new Date(dateS).getDay();
-    const hol = SL_HOLIDAYS[dateS];
-    days.push({ d, dateS, dow, isSun: dow===0, isSat: dow===6, hol });
+    const ds  = `${ym}-${String(d).padStart(2,'0')}`;
+    const dow = new Date(ds).getDay();
+    const hol = getHoliday(ds);   // ← uses STATE.holidays
+    days.push({ d, ds, dow, isSun: dow === 0, isSat: dow === 6, hol });
   }
 
-  const emps = empF ? EMPLOYEES.filter(e=>e.id===empF) : EMPLOYEES;
+  const emps     = empF ? STATE.employees.filter(e => e.id === empF) : getActiveEmployees();
+  const leaveMap = buildLeaveMap(ym);
 
-  const DOWL = ['S','M','T','W','T','F','S'];
-  const dayHdrs = days.map(({d, dow, isSun, isSat, hol}) => {
-    let bg = '';
-    if (isSun || hol) bg = 'background:#fffde7;color:#713f12';
-    else if (isSat) bg = 'background:#f3f4f6;color:var(--gray-500)';
-    const typeLabel = hol ? `<div class="hol-badge ${hol.type==='merc'?'hol-merc':'hol-poya'}">${hol.type==='merc'?'M':'★'}</div>` : '';
-    return `<th style="${bg}">${d}<br><span style="font-size:9px;opacity:.7">${DOWL[dow]}</span>${typeLabel}</th>`;
+  /* ── Day header row ── */
+  const dayHdrs = days.map(({ d, dow, isSun, isSat, hol }) => {
+    let cls = '';
+    if (isSun || hol) cls = 'dh-hol';
+    else if (isSat)   cls = 'dh-sat';
+
+    let badge = '';
+    if (hol) {
+      const bc = hol.type === 'Mercantile' ? 'hol-merc'
+               : hol.type === 'Poya'       ? 'hol-poya'
+               : 'hol-company';
+      const sym = hol.type === 'Mercantile' ? 'M' : hol.type === 'Poya' ? '★' : 'C';
+      badge = `<br><span class="hol-badge ${bc}">${sym}</span>`;
+    }
+    return `<th class="${cls}" title="${hol ? hol.name : ''}">${d}<br><span style="font-size:9px;opacity:.7">${DOWL[dow]}</span>${badge}</th>`;
   }).join('');
 
+  /* ── Employee rows ── */
   const rows = emps.map(emp => {
-    const cells = days.map(({dateS, isSun, isSat, hol}) => {
-      const lv = LEAVE[emp.id] && LEAVE[emp.id][dateS];
+    const empLeave = leaveMap[emp.id] || {};
+
+    const cells = days.map(({ ds, isSun, isSat, hol }) => {
+      // Priority 1: approved leave
+      const lv = empLeave[ds];
       if (lv) {
-        const code = typeCode[lv] || lv;
+        const code = TYPE_CODE[lv] || lv;
         return `<td><span class="code code-${code}">${code}</span></td>`;
       }
+      // Priority 2: holiday / Sunday
       if (isSun || hol) {
         const tipText = hol ? hol.name : 'Sunday';
-        const holCls = hol ? (hol.type==='merc'?'hol-merc':'hol-poya') : '';
-        return `<td class="day-hol"><div class="tooltip-wrap"><span class="hol-badge ${holCls}">${hol?(hol.type==='merc'?'M':'★'):'☀'}</span><span class="tooltip-box">${tipText}</span></div></td>`;
+        const bc = hol
+          ? (hol.type === 'Mercantile' ? 'hol-merc' : hol.type === 'Poya' ? 'hol-poya' : 'hol-company')
+          : '';
+        const sym = hol
+          ? (hol.type === 'Mercantile' ? 'M' : hol.type === 'Poya' ? '★' : 'C')
+          : '☀';
+        return `<td class="cell-hol">
+          <div class="tooltip-wrap">
+            <span class="hol-badge ${bc}">${sym}</span>
+            <span class="tooltip-box">${tipText}</span>
+          </div>
+        </td>`;
       }
-      if (isSat) return `<td class="day-sat"><span style="font-size:10px;color:var(--gray-300)">S</span></td>`;
-      return `<td><span style="font-size:10px;color:var(--gray-400)">P</span></td>`;
+      // Priority 3: Saturday
+      if (isSat) return `<td class="cell-sat"><span class="txt-sat">S</span></td>`;
+      // Priority 4: normal working day
+      return `<td><span class="txt-present">P</span></td>`;
     }).join('');
+
     return `<tr>
-      <td class="emp-name">${emp.name}<span class="sub">${emp.dept}</span></td>
+      <td class="emp-name">
+        ${emp.name}
+        <span class="emp-dept">${emp.dept || ''}</span>
+      </td>
       ${cells}
     </tr>`;
   }).join('');
 
-  document.getElementById('cal-out').innerHTML = emps.length === 0
-    ? `<div class="empty">No employees found</div>`
-    : `<table>
-        <thead><tr><th class="emp-col">Employee</th>${dayHdrs}</tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
+  /* ── Assemble ── */
+  if (emps.length === 0) {
+    document.getElementById('cal-out').innerHTML =
+      `<div class="cal-empty">No employees found. Add employees in the Employees page.</div>`;
+    return;
+  }
+
+  document.getElementById('cal-out').innerHTML = `
+    <table class="cal">
+      <thead>
+        <tr>
+          <th class="emp-col">Employee</th>
+          ${dayHdrs}
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 }
 
-const calMonth = document.getElementById('cal-month');
-const calYear  = document.getElementById('cal-year');
-calMonth.value = String(now.getMonth()+1).padStart(2,'0');
-calYear.value  = String(now.getFullYear());
-calMonth.onchange = buildCalendar;
-calYear.onchange  = buildCalendar;
+function pageInit() {
+  const now = new Date();
+  document.getElementById('cal-month').value = String(now.getMonth() + 1).padStart(2, '0');
+  document.getElementById('cal-year').value  = String(now.getFullYear());
 
-const empSel = document.getElementById('cal-emp');
-empSel.innerHTML = '<option value="">All Employees</option>' +
-  EMPLOYEES.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
-empSel.onchange = buildCalendar;
+  // Populate employee filter
+  const sel = document.getElementById('cal-emp');
+  sel.innerHTML = '<option value="">All Employees</option>' +
+    getActiveEmployees().map(e => `<option value="${e.id}">${e.name}</option>`).join('');
 
-buildCalendar();
+  sel.onchange   = buildCalendar;
+  document.getElementById('cal-month').onchange = buildCalendar;
+  document.getElementById('cal-year').onchange  = buildCalendar;
+
+  buildCalendar();
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  // Header date
+  const hd = document.getElementById('headerDate');
+  if (hd) hd.textContent = new Date().toLocaleDateString('en-GB', {
+    weekday:'short', day:'numeric', month:'short', year:'numeric'
+  });
+
+  // Nav clicks
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => navigateTo(item.dataset.page));
+  });
+
+  // Sidebar toggle — works on both desktop and mobile
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar    = document.getElementById('sidebar');
+  const mainContent = document.querySelector('.main-content');
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      const isMobile = window.innerWidth <= 900;
+      if (isMobile) {
+        sidebar.classList.toggle('open');
+      } else {
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('expanded', isCollapsed);
+      }
+    });
+  }
+
+  loadAllData();
+});
 </script>
+
+</body>
+</html>
