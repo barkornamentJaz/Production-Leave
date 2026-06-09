@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monthly Calendar — Bark Ornament LMS</title>
+  <title>Monthly Calendar — Bark Ornament Private Limited LMS</title>
   <style>
 :root {
   --navy:#0f2744;--navy-light:#1a3a6b;--teal:#0d9488;--teal-light:#14b8a6;
@@ -33,8 +33,7 @@ input,select,textarea{font-family:inherit}
 .toast-info{background:var(--navy);color:#fff}
 .toast-warning{background:var(--gold);color:#fff}
 .app-wrapper{display:flex;min-height:100vh}
-.sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto;overflow-x:hidden;transition:transform 0.28s cubic-bezier(.4,0,.2,1)}
-.sidebar.collapsed{transform:translateX(-100%)}
+.sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto;transition:transform var(--transition)}
 .sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.08)}
 .logo-mark{display:flex;align-items:center;gap:10px}
 .sidebar-nav{flex:1;padding:12px 8px}
@@ -45,15 +44,13 @@ input,select,textarea{font-family:inherit}
 .nav-icon{font-size:15px;width:20px;text-align:center}
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px}
 .sidebar-footer{padding:14px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:10px;color:rgba(255,255,255,.3)}
-.main-content{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;transition:margin-left 0.28s cubic-bezier(.4,0,.2,1)}
-.sidebar.collapsed~.main-content,.main-content.expanded{margin-left:0}
+.main-content{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
 .top-header{height:var(--header-h);background:#fff;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:12px;padding:0 24px;position:sticky;top:0;z-index:50}
 .top-header h1{font-size:16px;font-weight:700;color:var(--navy);flex:1}
 .header-date{font-size:12px;color:var(--gray-400)}
 .header-user{display:flex;align-items:center;gap:8px}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .page-content{padding:22px 24px;flex:1}
-.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;border:none;transition:background var(--transition);white-space:nowrap;cursor:pointer}
 .btn-primary{background:var(--teal);color:#fff}
 .btn-primary:hover{background:#0b8077}
@@ -61,50 +58,66 @@ input,select,textarea{font-family:inherit}
 .btn-outline:hover{border-color:var(--gray-400);background:var(--gray-50)}
 .btn-ghost{background:transparent;color:var(--gray-500);border:none}
 .btn-ghost:hover{background:var(--gray-100)}
-.btn-navy{background:var(--navy);color:#fff;border:none}
-.btn-navy:hover{background:var(--navy-light)}
 .btn-icon{padding:5px 8px;font-size:16px}
 .btn-sm{padding:5px 12px;font-size:12px}
-.cal-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.cal-toolbar select{padding:7px 12px;border-radius:var(--radius);border:1.5px solid var(--gray-200);font-size:13px;font-family:inherit;color:var(--gray-700);background:#fff;cursor:pointer;outline:none}
-.cal-toolbar select:focus{border-color:var(--teal)}
-.cal-month-label{margin-left:auto;font-size:16px;font-weight:800;color:var(--navy);letter-spacing:.02em}
-.cal-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.leg{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-size:11px;font-weight:700}
-.leg-note{font-size:11px;color:var(--gray-400);padding:3px 4px}
-.cal-table-wrap{overflow-x:auto}
-table.cal{border-collapse:collapse;font-size:11px;min-width:900px;width:100%}
-table.cal th,table.cal td{border:1px solid var(--gray-200);padding:5px 4px;text-align:center}
-table.cal thead th{background:var(--navy);color:#fff;font-weight:700;font-size:11px}
-table.cal thead th.emp-col{background:var(--navy-light);text-align:left;min-width:140px;padding-left:10px}
-table.cal td.emp-name{text-align:left;font-weight:600;color:var(--navy);background:var(--gray-50);padding-left:10px;white-space:nowrap}
-table.cal td.emp-name .emp-dept{font-size:9px;color:var(--gray-400);font-weight:400;display:block}
-.dh-hol{background:#fffde7!important;color:#92400e!important}
-.dh-sat{background:#f3f4f6!important;color:var(--gray-500)!important}
-table.cal td.cell-hol{background:#fffde7}
-table.cal td.cell-sat{background:#f9fafb}
-/* Leave on a holiday: faint yellow tint + leave code still visible */
-table.cal td.cell-hol-leave{background:#fffde7}
-.code{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700}
-.code-AL{background:#dbeafe;color:#1d4ed8}
-.code-CL{background:#d0faf4;color:var(--teal)}
-.code-SL{background:#fce7f3;color:#9d174d}
-.code-HD{background:#fef3c7;color:#92400e}
-.code-SHL{background:var(--red-light);color:var(--red)}
-.hol-badge{font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;display:inline-block}
-.hol-merc{background:#ede9fe;color:#5b21b6}
-.hol-poya{background:#fef3c7;color:#92400e}
-.hol-company{background:#d0faf4;color:var(--teal)}
-.tooltip-wrap{position:relative;display:inline-block}
-.tooltip-wrap:hover .tooltip-box{display:block}
-.tooltip-box{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:10px;padding:4px 7px;border-radius:4px;white-space:nowrap;z-index:10;pointer-events:none;margin-bottom:3px}
-.txt-present{font-size:10px;color:var(--gray-400)}
-.txt-sat{font-size:10px;color:var(--gray-300)}
-.cal-empty{text-align:center;padding:48px 20px;color:var(--gray-400);font-size:13px}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-.btn-loading{animation:pulse .9s ease infinite;pointer-events:none}
-@media print{.sidebar,.top-header,.cal-toolbar .btn,#printBtn,#refreshBtn,#reloadBtn{display:none!important}.main-content{margin-left:0!important}.page-content{padding:0!important}}
-@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sidebar.collapsed{transform:translateX(-100%)}.main-content{margin-left:0}#menuToggle{display:flex!important}.cal-month-label{font-size:13px}}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filter-select{background:#fff;border:1.5px solid var(--gray-200);border-radius:var(--radius);padding:7px 10px;font-size:12px;color:var(--gray-700);cursor:pointer;outline:none}
+.filter-select:focus{border-color:var(--teal)}
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+
+/* ── Calendar Table ── */
+.cal-wrap{overflow-x:auto;padding:0}
+.cal-table{border-collapse:collapse;font-size:11px;min-width:900px;width:100%}
+.cal-table th,.cal-table td{border:1px solid var(--gray-200);padding:4px 5px;text-align:center;vertical-align:middle}
+.cal-table thead th{background:var(--navy);color:#fff;font-weight:700;font-size:10px;padding:8px 5px;white-space:nowrap;position:sticky;top:0;z-index:2}
+.cal-table thead th.emp-col{background:var(--navy-light);text-align:left;min-width:140px;padding-left:10px}
+.cal-table thead th.day-col{min-width:34px}
+.cal-table thead th.weekend-col{background:#1c3d70;color:rgba(255,255,255,.5)}
+.cal-table thead th.holiday-col{background:#7c5a00;color:#fef3c7}
+.cal-table tbody tr:hover td{background:#f0f9ff!important}
+.cal-table td.emp-name-cell{text-align:left;font-weight:600;color:var(--navy);background:var(--gray-50)!important;padding-left:10px;white-space:nowrap;font-size:11px;position:sticky;left:0;z-index:1;border-right:2px solid var(--gray-300)}
+.cal-table td.weekend-day{background:#f9fafb;color:var(--gray-300)}
+.cal-table td.holiday-day{background:#fefce8}
+.cal-table td.today-day{background:#ecfdf5!important;border:1.5px solid var(--teal)!important}
+
+/* Leave code chips */
+.lc{display:inline-block;padding:2px 5px;border-radius:3px;font-size:9px;font-weight:800;line-height:1.3;letter-spacing:.02em}
+.lc-AL {background:#dbeafe;color:#1d4ed8}
+.lc-CL {background:#d0faf4;color:#0d9488}
+.lc-SL {background:#fce7f3;color:#9d174d}
+.lc-HD {background:#fef3c7;color:#92400e}
+.lc-SHL{background:#fee2e2;color:#dc2626}
+.lc-H  {background:#fef9c3;color:#713f12;font-size:8px}
+
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid var(--gray-100);background:var(--gray-50)}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray-600)}
+
+/* Summary cards */
+.month-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+.ms-card{background:#fff;border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow);text-align:center}
+.ms-val{font-size:20px;font-weight:800;color:var(--navy)}
+.ms-lbl{font-size:11px;color:var(--gray-500);margin-top:2px}
+
+/* Print */
+@media print{
+  .sidebar,.top-header,.toolbar,.no-print{display:none!important}
+  .main-content{margin-left:0!important}
+  .page-content{padding:0!important}
+  .card{box-shadow:none!important;border:1px solid #ccc!important}
+  .cal-table th{background:#1f2937!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cal-table td.emp-name-cell{background:#f3f4f6!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .lc{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .print-header{display:block!important}
+  body{font-size:11px}
+}
+.print-header{display:none;text-align:center;padding-bottom:12px;border-bottom:2px solid #0f2744;margin-bottom:14px}
+.print-header .ph-company{font-size:14px;font-weight:800;color:#0f2744}
+.print-header .ph-title{font-size:12px;color:#6b7280;margin-top:2px}
+
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}}
+@media(max-width:520px){.toolbar{flex-direction:column;align-items:flex-start}}
   </style>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f2744'/><text y='22' x='5' font-size='18'>🌿</text></svg>">
 </head>
@@ -149,9 +162,9 @@ table.cal td.cell-hol-leave{background:#fffde7}
     </div>
   </aside>
 
-  <div class="main-content" id="mainContent">
+  <div class="main-content">
     <header class="top-header">
-      <button id="menuToggle" class="btn btn-ghost btn-icon" title="Toggle sidebar">☰</button>
+      <button id="menuToggle" class="btn btn-ghost btn-icon">☰</button>
       <h1>Monthly Calendar</h1>
       <span id="headerDate" class="header-date"></span>
       <div class="header-user">
@@ -161,47 +174,56 @@ table.cal td.cell-hol-leave{background:#fffde7}
     </header>
 
     <div class="page-content">
-      <div class="cal-toolbar">
-        <select id="cal-month">
-          <option value="01">January</option><option value="02">February</option>
-          <option value="03">March</option><option value="04">April</option>
-          <option value="05">May</option><option value="06">June</option>
-          <option value="07">July</option><option value="08">August</option>
-          <option value="09">September</option><option value="10">October</option>
-          <option value="11">November</option><option value="12">December</option>
-        </select>
-        <select id="cal-year">
-          <option value="2024">2024</option>
-          <option value="2025">2025</option>
-          <option value="2026">2026</option>
-          <option value="2027">2027</option>
-        </select>
-        <select id="cal-emp"></select>
-        <button class="btn btn-outline btn-sm" id="reloadBtn" onclick="reloadData()">🔄 Reload Data</button>
-        <button class="btn btn-primary" id="refreshBtn" onclick="buildCalendar()">⟳ Refresh View</button>
-        <button class="btn btn-navy" id="printBtn" onclick="window.print()">🖨 Print</button>
-        <span class="cal-month-label" id="month-label"></span>
+
+      <!-- Print header -->
+      <div class="print-header" id="printHeader">
+        <div class="ph-company">Bark Ornament Private Limited</div>
+        <div class="ph-title" id="ph-cal-title">Monthly Leave Calendar</div>
       </div>
 
-      <div class="cal-legend">
-        <span class="leg" style="background:#dbeafe;color:#1d4ed8">AL Annual Leave</span>
-        <span class="leg" style="background:#d0faf4;color:var(--teal)">CL Casual Leave</span>
-        <span class="leg" style="background:#fce7f3;color:#9d174d">SL Sick Leave</span>
-        <span class="leg" style="background:#fef3c7;color:#92400e">HD Half Day</span>
-        <span class="leg" style="background:var(--red-light);color:var(--red)">SHL Short Leave</span>
-        <span class="leg" style="background:#ede9fe;color:#5b21b6">M Mercantile</span>
-        <span class="leg" style="background:#fef9c3;color:#713f12">★ Poya Day</span>
-        <span class="leg-note">P = Present · S = Saturday</span>
-      </div>
-
-      <div class="card">
-        <div class="cal-table-wrap" id="cal-out">
-          <div class="cal-empty">Loading calendar…</div>
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button class="btn btn-outline btn-sm no-print" id="prevMonth" onclick="changeMonth(-1)">◀ Prev</button>
+          <span id="cal-month-label" style="font-size:15px;font-weight:800;color:var(--navy);min-width:160px;text-align:center"></span>
+          <button class="btn btn-outline btn-sm no-print" id="nextMonth" onclick="changeMonth(1)">Next ▶</button>
+          <button class="btn btn-ghost btn-sm no-print" onclick="goToToday()" style="color:var(--teal)">Today</button>
+        </div>
+        <div class="toolbar-right">
+          <select class="filter-select no-print" id="cal-dept-filter" onchange="renderCalendar()">
+            <option value="">All Departments</option>
+          </select>
+          <button class="btn btn-outline btn-sm no-print" onclick="printCalendar()">🖨️ Print</button>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+
+      <!-- Month summary cards -->
+      <div class="month-summary" id="month-summary"></div>
+
+      <!-- Calendar card -->
+      <div class="card">
+        <div class="cal-wrap">
+          <table class="cal-table" id="cal-table">
+            <thead id="cal-thead"></thead>
+            <tbody id="cal-tbody"></tbody>
+          </table>
+        </div>
+        <div class="legend">
+          <span class="legend-item"><span class="lc lc-AL">AL</span> Annual Leave</span>
+          <span class="legend-item"><span class="lc lc-CL">CL</span> Casual Leave</span>
+          <span class="legend-item"><span class="lc lc-SL">SL</span> Sick Leave</span>
+          <span class="legend-item"><span class="lc lc-HD">HD</span> Half Day</span>
+          <span class="legend-item"><span class="lc lc-SHL">SHL</span> Short Leave</span>
+          <span class="legend-item"><span class="lc lc-H">H</span> Holiday</span>
+          <span class="legend-item" style="color:var(--gray-400)">
+            <span style="display:inline-block;width:14px;height:14px;background:#f9fafb;border:1px solid var(--gray-200);border-radius:2px;vertical-align:middle"></span> Weekend
+          </span>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /app-wrapper -->
 
 <!-- CORE DATA LAYER -->
 <script>
@@ -211,7 +233,11 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw4hNM5k5Di9lRq60KeORH3
 
 const STATE = {
   employees:[], leaveRecords:[], holidays:[],
-  settings:{ company:'Bark Ornament (Pvt) Ltd', shlLimit:1, satRule:0.5 },
+  settings:{
+    company:'Bark Ornament Private Limited',
+    shlLimit: 2,
+    satRule: 0.5
+  },
   loaded:false
 };
 
@@ -226,7 +252,7 @@ async function apiFetch(action, payload={}) {
   try {
     const res = await fetch(API_URL+'?action='+action, { method:'POST', body:JSON.stringify(payload) });
     return await res.json();
-  } catch(e) { console.error('API Error:',e); return { success:false, data:[] }; }
+  } catch(e){ console.error('API Error:',e); return { success:false, data:[] }; }
 }
 
 async function loadAllData() {
@@ -236,12 +262,13 @@ async function loadAllData() {
       apiFetch('getEmployees'), apiFetch('getLeaveRecords'),
       apiFetch('getHolidays'),  apiFetch('getSettings')
     ]);
-    STATE.employees    = (eR.data||[]).map(normalizeEmployee);
-    STATE.leaveRecords = (lR.data||[]).map(normalizeLeave);
-    STATE.holidays     = (hR.data||[]).map(normalizeHoliday);
+    STATE.employees    = (eR.data||[]);
+    STATE.leaveRecords = (lR.data||[]);
+    STATE.holidays     = hR.data||[];
     if (sR.data) STATE.settings = { ...STATE.settings, ...sR.data };
+    STATE.settings.shlLimit = parseInt(STATE.settings.shlLimit) || 2;
     STATE.loaded = true;
-  } catch(e) {
+  } catch(e){
     toast('Failed to load data. Check API URL.','error');
   } finally {
     showLoading(false);
@@ -249,79 +276,16 @@ async function loadAllData() {
   }
 }
 
-/* ── Normalizers: trim whitespace + fix casing from sheet ── */
-function normalizeHoliday(h) {
-  const typeRaw = String(h.type||'').trim();
-  // Normalize type: case-insensitive match to canonical values
-  let type = 'Company';
-  if (/poya/i.test(typeRaw))       type = 'Poya';
-  else if (/mercantile/i.test(typeRaw)) type = 'Mercantile';
-  return {
-    date: String(h.date||'').trim(),
-    name: String(h.name||'').trim(),
-    type
-  };
-}
-function normalizeEmployee(e) {
-  return {
-    id:          String(e.id||'').trim(),
-    name:        String(e.name||'').trim(),
-    dept:        String(e.dept||'').trim(),
-    entitlement: e.entitlement,
-    joinDate:    String(e.joinDate||'').trim(),
-    status:      String(e.status||'').trim()
-  };
-}
-function normalizeLeave(r) {
-  return {
-    id:      String(r.id||'').trim(),
-    empId:   String(r.empId||'').trim(),
-    empName: String(r.empName||'').trim(),
-    type:    String(r.type||'').trim(),
-    start:   String(r.start||'').trim(),
-    end:     String(r.end||r.start||'').trim(),
-    days:    r.days,
-    reason:  String(r.reason||'').trim(),
-    status:  String(r.status||'').trim()
-  };
-}
-
 function afterLoad() {
   updateExcessBadge();
   if (typeof pageInit==='function') pageInit();
 }
 
-async function reloadData() {
-  const btn = document.getElementById('reloadBtn');
-  btn.classList.add('btn-loading');
-  btn.textContent = '⏳ Loading…';
-  showLoading(true);
-  try {
-    const [eR,lR,hR,sR] = await Promise.all([
-      apiFetch('getEmployees'), apiFetch('getLeaveRecords'),
-      apiFetch('getHolidays'),  apiFetch('getSettings')
-    ]);
-    STATE.employees    = (eR.data||[]).map(normalizeEmployee);
-    STATE.leaveRecords = (lR.data||[]).map(normalizeLeave);
-    STATE.holidays     = (hR.data||[]).map(normalizeHoliday);
-    if (sR.data) STATE.settings = { ...STATE.settings, ...sR.data };
-    updateExcessBadge();
-    buildCalendar();
-    toast('Data refreshed from Google Sheet!','success');
-  } catch(e) {
-    toast('Reload failed. Check API connection.','error');
-  } finally {
-    showLoading(false);
-    btn.classList.remove('btn-loading');
-    btn.innerHTML = '🔄 Reload Data';
-  }
-}
-
-function showLoading(on) {
+function showLoading(on){
   const el=document.getElementById('loadingOverlay');
   if(el) el.style.display=on?'flex':'none';
 }
-function toast(msg,type='info') {
+function toast(msg,type='info'){
   const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
   const el=document.createElement('div');
   el.className=`toast toast-${type}`;
@@ -329,10 +293,11 @@ function toast(msg,type='info') {
   document.getElementById('toastContainer').appendChild(el);
   setTimeout(()=>el.remove(),3500);
 }
-function updateExcessBadge() {
+
+function updateExcessBadge(){
   const now=new Date();
   const ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const limit=STATE.settings.shlLimit||1;
+  const limit=parseInt(STATE.settings.shlLimit)||2;
   const excess=new Set();
   STATE.leaveRecords.filter(r=>
     r.type==='Short Leave'&&r.status==='Approved'&&r.start&&r.start.startsWith(ym)
@@ -347,9 +312,12 @@ function updateExcessBadge() {
   if(badge){badge.textContent=excess.size;badge.style.display=excess.size>0?'inline-block':'none';}
 }
 
-/* ── Holiday lookup (already normalized) ── */
-function getHoliday(ds){ return STATE.holidays.find(h=>h.date===ds)||null; }
-function getActiveEmployees(){ return STATE.employees.filter(e=>e.status!=='Inactive'); }
+function getActiveEmployees(){ return STATE.employees.filter(e=>e.status==='Active'); }
+function isHoliday(ds){ return STATE.holidays.some(h=>h.date===ds); }
+function getHolidayName(ds){ const h=STATE.holidays.find(h=>h.date===ds); return h?h.name:''; }
+function isSunday(ds){ return new Date(ds+'T00:00').getDay()===0; }
+function isSaturday(ds){ return new Date(ds+'T00:00').getDay()===6; }
+function pad2(n){ return String(n).padStart(2,'0'); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   const hd=document.getElementById('headerDate');
@@ -357,15 +325,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('.nav-item').forEach(item=>{
     item.addEventListener('click',()=>navigateTo(item.dataset.page));
   });
-  const toggle=document.getElementById('menuToggle');
-  const sidebar=document.getElementById('sidebar');
-  const mc=document.getElementById('mainContent');
-  if(toggle){
-    toggle.addEventListener('click',()=>{
-      if(window.innerWidth<=900) sidebar.classList.toggle('open');
-      else { const c=sidebar.classList.toggle('collapsed'); mc.classList.toggle('expanded',c); }
-    });
-  }
+  const menuToggle=document.getElementById('menuToggle');
+  if(menuToggle) menuToggle.addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
   loadAllData();
 });
 </script>
@@ -374,178 +335,198 @@ document.addEventListener('DOMContentLoaded',()=>{
 <script>
 'use strict';
 
-const TYPE_CODE = {
-  'Annual Leave':'AL','Casual Leave':'CL','Sick Leave':'SL',
-  'Half Day Leave':'HD','Short Leave':'SHL'
-};
+let CAL_YEAR  = new Date().getFullYear();
+let CAL_MONTH = new Date().getMonth() + 1; // 1-12
 
-function buildLeaveMap(ym) {
-  const map = {};
-  STATE.leaveRecords.forEach(r => {
-    if (r.status !== 'Approved') return;
-    const s = new Date(r.start + 'T00:00');
-    const e = new Date((r.end || r.start) + 'T00:00');
-    for (let d = new Date(s); d <= e; d.setDate(d.getDate()+1)) {
-      const ds = d.toISOString().split('T')[0];
-      if (!ds.startsWith(ym)) continue;
-      if (!map[r.empId]) map[r.empId] = {};
-      map[r.empId][ds] = r.type;
-    }
-  });
-  return map;
-}
-
-function buildCalendar() {
-  const month = document.getElementById('cal-month').value;
-  const year  = document.getElementById('cal-year').value;
-  const empF  = document.getElementById('cal-emp').value;
-  const ym    = `${year}-${month}`;
-
-  document.getElementById('month-label').textContent =
-    new Date(+year, +month-1, 1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-
-  const daysInMonth = new Date(+year, +month, 0).getDate();
-  const DOWL = ['S','M','T','W','T','F','S'];
-
-  const days = [];
-  for (let d = 1; d <= daysInMonth; d++) {
-    const ds  = `${ym}-${String(d).padStart(2,'0')}`;
-    const dow = new Date(ds+'T00:00').getDay();
-    const hol = getHoliday(ds);
-    days.push({ d, ds, dow, isSun:dow===0, isSat:dow===6, hol });
-  }
-
-  const emps     = empF ? STATE.employees.filter(e=>e.id===empF) : getActiveEmployees();
-  const leaveMap = buildLeaveMap(ym);
-
-  /* ── Day header row ── */
-  const dayHdrs = days.map(({d, dow, isSun, isSat, hol}) => {
-    let cls = '';
-    if (isSun || hol) cls = 'dh-hol';
-    else if (isSat)   cls = 'dh-sat';
-
-    let badge = '';
-    if (hol) {
-      const bc  = holBadgeClass(hol.type);
-      const sym = holSymbol(hol.type);
-      badge = `<br><span class="hol-badge ${bc}">${sym}</span>`;
-    }
-    const tip = hol ? hol.name : (isSun ? 'Sunday' : '');
-    return `<th class="${cls}" title="${tip}">${d}<br><span style="font-size:9px;opacity:.7">${DOWL[dow]}</span>${badge}</th>`;
-  }).join('');
-
-  /* ── Employee rows ── */
-  const rows = emps.map(emp => {
-    const empLeave = leaveMap[emp.id] || {};
-
-    const cells = days.map(({ds, isSun, isSat, hol}) => {
-      const isSunOrHol = isSun || !!hol;
-      const lv = empLeave[ds];
-
-      /* ── PRIORITY RULES ──────────────────────────────────────
-         1. Sunday → always show Sunday marker, no leave code
-         2. Poya / Mercantile → always show holiday marker, no leave code
-            (leave should not have been deducted on these days)
-         3. Company holiday → show holiday marker; if leave was also
-            recorded show the leave code below (for reference)
-         4. Saturday → S marker
-         5. Normal working day with leave → leave code
-         6. Normal working day, present → P
-      ──────────────────────────────────────────────────────── */
-
-      // Sunday — no work, no leave counting
-      if (isSun) {
-        return `<td class="cell-hol"><span class="hol-badge" style="background:#f5f5f5;color:var(--gray-400)">☀</span></td>`;
-      }
-
-      // Poya or Mercantile — these are non-working days; hide any leave code
-      if (hol && (hol.type === 'Poya' || hol.type === 'Mercantile')) {
-        const bc  = holBadgeClass(hol.type);
-        const sym = holSymbol(hol.type);
-        return `<td class="cell-hol">
-          <div class="tooltip-wrap">
-            <span class="hol-badge ${bc}">${sym}</span>
-            <span class="tooltip-box">${hol.name}</span>
-          </div>
-        </td>`;
-      }
-
-      // Company holiday — show marker; also show leave code below if recorded
-      if (hol && hol.type === 'Company') {
-        const bc  = holBadgeClass(hol.type);
-        const sym = holSymbol(hol.type);
-        const leaveBelow = lv
-          ? `<br><span class="code code-${TYPE_CODE[lv]||lv}" style="margin-top:2px">${TYPE_CODE[lv]||lv}</span>`
-          : '';
-        return `<td class="cell-hol">
-          <div class="tooltip-wrap">
-            <span class="hol-badge ${bc}">${sym}</span>
-            <span class="tooltip-box">${hol.name}</span>
-          </div>${leaveBelow}
-        </td>`;
-      }
-
-      // Saturday
-      if (isSat) return `<td class="cell-sat"><span class="txt-sat">S</span></td>`;
-
-      // Normal working day — leave or present
-      if (lv) {
-        const code = TYPE_CODE[lv] || lv;
-        return `<td><span class="code code-${code}">${code}</span></td>`;
-      }
-      return `<td><span class="txt-present">P</span></td>`;
-    }).join('');
-
-    return `<tr>
-      <td class="emp-name">
-        ${emp.name}
-        <span class="emp-dept">${emp.dept||''}</span>
-      </td>
-      ${cells}
-    </tr>`;
-  }).join('');
-
-  if (emps.length === 0) {
-    document.getElementById('cal-out').innerHTML =
-      `<div class="cal-empty">No employees found. Add employees in the Employees page.</div>`;
-    return;
-  }
-
-  document.getElementById('cal-out').innerHTML = `
-    <table class="cal">
-      <thead><tr>
-        <th class="emp-col">Employee</th>${dayHdrs}
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
-
-/* ── Holiday badge helpers ── */
-function holBadgeClass(type) {
-  if (type === 'Poya')       return 'hol-poya';
-  if (type === 'Mercantile') return 'hol-merc';
-  return 'hol-company';
-}
-function holSymbol(type) {
-  if (type === 'Poya')       return '★';
-  if (type === 'Mercantile') return 'M';
-  return 'C';
-}
+const MONTH_NAMES = ['January','February','March','April','May','June',
+                     'July','August','September','October','November','December'];
+const DAY_ABBR    = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
 function pageInit() {
-  const now = new Date();
-  document.getElementById('cal-month').value = String(now.getMonth()+1).padStart(2,'0');
-  document.getElementById('cal-year').value  = String(now.getFullYear());
+  // Populate department filter
+  const depts = [...new Set(STATE.employees.map(e=>e.dept).filter(Boolean))].sort();
+  const sel = document.getElementById('cal-dept-filter');
+  if (sel) {
+    sel.innerHTML = '<option value="">All Departments</option>' +
+      depts.map(d=>`<option value="${d}">${d}</option>`).join('');
+  }
+  renderCalendar();
+}
 
-  const sel = document.getElementById('cal-emp');
-  sel.innerHTML = '<option value="">All Employees</option>' +
-    getActiveEmployees().map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+function changeMonth(delta) {
+  CAL_MONTH += delta;
+  if (CAL_MONTH > 12){ CAL_MONTH = 1; CAL_YEAR++; }
+  if (CAL_MONTH < 1) { CAL_MONTH = 12; CAL_YEAR--; }
+  renderCalendar();
+}
 
-  sel.onchange = buildCalendar;
-  document.getElementById('cal-month').onchange = buildCalendar;
-  document.getElementById('cal-year').onchange  = buildCalendar;
+function goToToday() {
+  CAL_YEAR  = new Date().getFullYear();
+  CAL_MONTH = new Date().getMonth() + 1;
+  renderCalendar();
+}
 
-  buildCalendar();
+function renderCalendar() {
+  const yr   = CAL_YEAR;
+  const mo   = CAL_MONTH;  // 1-12
+  const ym   = `${yr}-${pad2(mo)}`;
+  const today = new Date().toISOString().split('T')[0];
+
+  // Update month label
+  document.getElementById('cal-month-label').textContent = `${MONTH_NAMES[mo-1]} ${yr}`;
+  document.getElementById('ph-cal-title').textContent = `Leave Calendar — ${MONTH_NAMES[mo-1]} ${yr}`;
+
+  // Days in month
+  const daysInMonth = new Date(yr, mo, 0).getDate();
+  const days = [];
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${yr}-${pad2(mo)}-${pad2(d)}`;
+    days.push({
+      d, ds,
+      isSun:     isSunday(ds),
+      isSat:     isSaturday(ds),
+      isHol:     isHoliday(ds),
+      isToday:   ds === today,
+      holName:   getHolidayName(ds),
+      dayOfWeek: new Date(ds+'T00:00').getDay() // 0=Sun
+    });
+  }
+
+  // Filter employees
+  const deptFilter = document.getElementById('cal-dept-filter')?.value || '';
+  let emps = getActiveEmployees();
+  if (deptFilter) emps = emps.filter(e => e.dept === deptFilter);
+
+  // Build leave lookup: empId → {dateStr → leave record}
+  const leaveLookup = {};
+  emps.forEach(e => { leaveLookup[e.id] = {}; });
+
+  STATE.leaveRecords
+    .filter(r => r.status === 'Approved')
+    .forEach(r => {
+      if (!leaveLookup[r.empId]) return;
+      // Expand date range
+      const start = new Date(r.start + 'T00:00');
+      const end   = new Date((r.end || r.start) + 'T00:00');
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const ds = d.toISOString().split('T')[0];
+        if (ds.startsWith(ym)) {
+          leaveLookup[r.empId][ds] = r.type;
+        }
+      }
+    });
+
+  // ── Build THEAD ──
+  const thead = document.getElementById('cal-thead');
+  let thHTML = '<tr><th class="emp-col">Employee</th>';
+  days.forEach(day => {
+    let cls = 'day-col';
+    if (day.isSun) cls += ' weekend-col';
+    else if (day.isSat) cls += ' weekend-col';
+    else if (day.isHol) cls += ' holiday-col';
+    const title = day.isHol ? day.holName : DAY_ABBR[day.dayOfWeek];
+    thHTML += `<th class="${cls}" title="${day.isHol?day.holName:''}">${day.d}<br><span style="font-size:8px;font-weight:400;opacity:.75">${title}</span></th>`;
+  });
+  thHTML += '</tr>';
+  thead.innerHTML = thHTML;
+
+  // ── Build TBODY ──
+  const tbody = document.getElementById('cal-tbody');
+  let tbHTML = '';
+
+  if (emps.length === 0) {
+    tbHTML = `<tr><td colspan="${daysInMonth+1}" style="text-align:center;padding:24px;color:var(--gray-400)">No employees found</td></tr>`;
+  } else {
+    emps.forEach(emp => {
+      tbHTML += `<tr>`;
+      tbHTML += `<td class="emp-name-cell">${emp.name}<br><span style="font-size:9px;font-weight:400;color:var(--gray-400)">${emp.dept}</span></td>`;
+      days.forEach(day => {
+        const leaveType = leaveLookup[emp.id][day.ds];
+        let tdClass = '';
+        let cellContent = '';
+
+        if (day.isToday) tdClass += ' today-day';
+        if (day.isSun || day.isSat) {
+          tdClass += ' weekend-day';
+          if (!leaveType) { cellContent = ''; }
+        } else if (day.isHol && !leaveType) {
+          tdClass += ' holiday-day';
+          cellContent = `<span class="lc lc-H" title="${day.holName}">H</span>`;
+        }
+
+        if (leaveType) {
+          const code = leaveCode(leaveType);
+          const lcClass = 'lc-' + code;
+          cellContent = `<span class="lc ${lcClass}" title="${leaveType}">${code}</span>`;
+        }
+
+        tbHTML += `<td class="${tdClass.trim()}">${cellContent}</td>`;
+      });
+      tbHTML += `</tr>`;
+    });
+  }
+  tbody.innerHTML = tbHTML;
+
+  // ── Summary cards ──
+  buildMonthlySummary(ym, emps);
+}
+
+function leaveCode(type) {
+  const m = {
+    'Annual Leave':'AL','Casual Leave':'CL','Sick Leave':'SL',
+    'Half Day Leave':'HD','Short Leave':'SHL'
+  };
+  return m[type] || type;
+}
+
+function buildMonthlySummary(ym, emps) {
+  const empIds = emps.map(e=>e.id);
+  const recs = STATE.leaveRecords.filter(r=>
+    empIds.includes(r.empId) && r.status==='Approved' &&
+    r.start && r.start.startsWith(ym)
+  );
+
+  const totalAL  = recs.filter(r=>r.type==='Annual Leave').reduce((s,r)=>s+parseFloat(r.days||0),0);
+  const totalCL  = recs.filter(r=>r.type==='Casual Leave').reduce((s,r)=>s+parseFloat(r.days||0),0);
+  const totalSL  = recs.filter(r=>r.type==='Sick Leave').reduce((s,r)=>s+parseFloat(r.days||0),0);
+  const totalHD  = recs.filter(r=>r.type==='Half Day Leave').length;
+  const totalSHL = recs.filter(r=>r.type==='Short Leave').length;
+  const onLeave  = new Set(recs.map(r=>r.empId)).size;
+  const holidays = STATE.holidays.filter(h=>h.date.startsWith(ym)).length;
+
+  document.getElementById('month-summary').innerHTML = `
+    <div class="ms-card">
+      <div class="ms-val" style="color:var(--teal)">${onLeave}</div>
+      <div class="ms-lbl">Staff on Leave</div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-val" style="color:#1d4ed8">${totalAL}</div>
+      <div class="ms-lbl">Annual Leave Days</div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-val" style="color:var(--teal)">${totalCL}</div>
+      <div class="ms-lbl">Casual Leave Days</div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-val" style="color:#9d174d">${totalSL}</div>
+      <div class="ms-lbl">Sick Leave Days</div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-val" style="color:#92400e">${totalHD}</div>
+      <div class="ms-lbl">Half Days</div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-val" style="color:var(--red)">${totalSHL}</div>
+      <div class="ms-lbl">Short Leaves</div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-val" style="color:#713f12">${holidays}</div>
+      <div class="ms-lbl">Public Holidays</div>
+    </div>`;
+}
+
+function printCalendar() {
+  window.print();
 }
 </script>
 
